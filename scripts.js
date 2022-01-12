@@ -1,5 +1,3 @@
-
-
 /**
  * Takes a string and makes an array of valid colors.
  *
@@ -13,6 +11,7 @@ function getInputColors(string) {
 }
 
 /**
+ * Build a TD table cell for each color.
  *
  * @param {Array} colors
  * @param {String} currentColumnColor
@@ -21,12 +20,18 @@ function getInputColors(string) {
 function buildTableTds(colors, currentColumnColor) {
   return colors.map(color => {
     return `
-      <td>${ tinycolor.readability(color, currentColumnColor).toFixed(2) }</td>
+      <td style="
+        --color-1: ${ tinycolor(color).toHexString()};
+        --color-2: ${ tinycolor(currentColumnColor).toHexString() };
+      ">
+        ${ tinycolor.readability(color, currentColumnColor).toFixed(2) }
+      </td>
     `;
   }).join('');
 }
 
 /**
+ * Build a TR rows for each color.
  *
  * @param {Array} colors
  */
@@ -34,7 +39,12 @@ function buildTableTr(colors) {
   return colors.map(color => {
     return `
       <tr scope="row">
-        <th>${ color }</th>
+        <th style="
+          --color: ${ tinycolor(color).toHexString()};
+          --text-color: ${ tinycolor.mostReadable(color, ["#fff", "#000"]).toHexString() };
+        ">
+          ${ color }
+        </th>
         ${ buildTableTds(colors, color) }
       </tr>
     `;
@@ -42,6 +52,7 @@ function buildTableTr(colors) {
 }
 
 /**
+ * Create the first row header for the table.
  *
  * @param {Array} colors
  * @returns String
@@ -49,7 +60,12 @@ function buildTableTr(colors) {
 function buildTableRowHeader(colors) {
   const headerCells =  colors.map(color => {
     return `
-      <th>${ color }</th>
+      <th style="
+          --color: ${ tinycolor(color).toHexString()};
+          --text-color: ${tinycolor.mostReadable(color, ["#fff", "#000"]).toHexString() };
+      ">
+        ${ color }
+      </th>
     `;
   }).join('');
 
@@ -61,7 +77,12 @@ function buildTableRowHeader(colors) {
   `;
 }
 
-
+/**
+ * Build the markup for the <table> element.
+ *
+ * @param {Array} colors
+ * @returns String
+ */
 function buildTable(colors) {
   return `
     <table>
@@ -71,6 +92,9 @@ function buildTable(colors) {
   `;
 }
 
+/**
+ * Event listener for form submission.
+ */
 document.querySelector('.color-input-form').addEventListener('submit', e => {
   const colorInput = e.target.querySelector('textarea')
   const colors = getInputColors(colorInput.value);

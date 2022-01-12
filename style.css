@@ -1,0 +1,14 @@
+td, th {
+  padding: 4px;
+  text-align: start;
+}
+
+th {
+  background-color: var(--color);
+  color: var(--text-color);
+}
+
+td {
+  background-color: var(--color-1);
+  color: var(--color-2);
+}
