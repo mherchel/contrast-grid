@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <main>
+    <form class="color-input-form">
+      <h2>Enter Colors</h2>
+      <label>
+        <div>Enter Hex, RGB, HSL, or named values for colors (<a href="https://github.com/bgrins/TinyColor#accepted-string-input">more info on accepted color formats</a>), one per line:</div>
+        <textarea id="colors" rows="5" cols="33">
+          Purple
+          hsl(0, 100%, 50%)
+          #90ee90
+          white
+        </textarea>
+      </label>
+      <button>Calculate Contrasts</button>
+    </form>
+
+    <div class="table-container"></div>
+
+  </main>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tinycolor/1.4.1/tinycolor.min.js"></script>
+  <script src="/scripts.js"></script>
+</body>
+</html>
