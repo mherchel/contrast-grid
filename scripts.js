@@ -21,7 +21,7 @@ function buildTableTds(xAxisColors, compareColor) {
   return xAxisColors.map(color => {
     return `
       <td style="
-        --color-1: ${ tinycolor(color).toHexString()};
+        --color-1: ${ tinycolor(color).toHexString() };
         --color-2: ${ tinycolor(compareColor).toHexString() };
       ">
         ${ tinycolor.readability(color, compareColor).toFixed(2) }
@@ -41,8 +41,8 @@ function buildDataRows(xAxisColors, yAxisColors) {
 
   return yAxisColors.map(color => {
     return `
-      <tr scope="row">
-        <th style="
+      <tr>
+        <th scope="row" style="
           --color: ${ tinycolor(color).toHexString()};
           --text-color: ${ tinycolor.mostReadable(color, ["#fff", "#000"]).toHexString() };
         ">
@@ -63,7 +63,7 @@ function buildDataRows(xAxisColors, yAxisColors) {
 function buildHeaderRow(xAxisColors) {
   const headerCells =  xAxisColors.map(color => {
     return `
-      <th style="
+      <th scope="col" style="
           --color: ${ tinycolor(color).toHexString()};
           --text-color: ${tinycolor.mostReadable(color, ["#fff", "#000"]).toHexString() };
       ">

@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contrast Grid</title>
+  <title>Color Contrast Grid</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
   <main>
-    <h2>Directions</h2>
-    <p>Enter Hex, RGB, HSL, or named values for colors (<a href="https://github.com/bgrins/TinyColor#accepted-string-input">more info on accepted color formats</a>), one per line.</p>
+    <h1>Build a Color Contrast Grid</h1>
+    <p>Enter one color per line (this can be almost any format including Hex, RGB, HSL, HSLA, etc). If you choose to not fill in the "Y axis colors" field, we will compare the X axis against itself.</p>
     <div class="layout-container">
       <form class="color-input-form">
         <label>
@@ -24,6 +24,9 @@
       </form>
       <div class="table-container"></div>
     </div>
+    <footer>
+      <p>The code for this website is available at <a href="https://github.com/mherchel/contrast-grid">https://github.com/mherchel/contrast-grid</a>.</p>
+    </footer>
   </main>
   <script src="/tinycolor-min.js"></script>
   <script src="/scripts.js"></script>
