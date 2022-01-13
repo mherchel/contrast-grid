@@ -12,3 +12,12 @@ td {
   background-color: var(--color-1);
   color: var(--color-2);
 }
+
+button {
+  display: block;
+}
+
+.layout-container {
+  display: grid;
+  grid-template-columns: 200px auto;
+}

@@ -2,38 +2,30 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contrast Grid</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
   <main>
-    <form class="color-input-form">
-      <h2>Enter Colors</h2>
-      <label>
-        <div>Enter Hex, RGB, HSL, or named values for colors (<a href="https://github.com/bgrins/TinyColor#accepted-string-input">more info on accepted color formats</a>), one per line:</div>
-        <textarea class="color-input-1" rows="5" >
-Purple
-hsl(0, 100%, 50%)
-#90ee90
-white
-        </textarea>
-
-        <textarea class="color-input-2" rows="5">
-orange
-green
-pink
-
-        </textarea>
-      </label>
-      <button>Get Contrast Grid</button>
-    </form>
-
-    <div class="table-container"></div>
-
+    <h2>Directions</h2>
+    <p>Enter Hex, RGB, HSL, or named values for colors (<a href="https://github.com/bgrins/TinyColor#accepted-string-input">more info on accepted color formats</a>), one per line.</p>
+    <div class="layout-container">
+      <form class="color-input-form">
+        <label>
+          <div>X axis colors (required)</div>
+          <textarea class="color-input-1" rows="5" required></textarea>
+        </label>
+        <label>
+          <div>Y axis colors (optional)</div>
+          <textarea class="color-input-2" rows="5"></textarea>
+        </label>
+        <button>Get Contrast Grid</button>
+      </form>
+      <div class="table-container"></div>
+    </div>
   </main>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tinycolor/1.4.1/tinycolor.min.js"></script>
+  <script src="/tinycolor-min.js"></script>
   <script src="/scripts.js"></script>
 </body>
 </html>
