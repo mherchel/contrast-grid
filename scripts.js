@@ -1,3 +1,9 @@
+function isTWoSetsOfColors() {
+  const colorInput2 = document.querySelector('.colors-input-2');
+  return colorInput2.value.length;
+}
+
+
 /**
  * Takes a string and makes an array of valid colors.
  *
@@ -11,20 +17,20 @@ function getInputColors(string) {
 }
 
 /**
- * Build a TD table cell for each color.
+ * Build all <td> table cells in a row.
  *
- * @param {Array} colors
- * @param {String} currentColumnColor
+ * @param {Array} xAxisColors
+ * @param {String} currentColor
  * @returns
  */
-function buildTableTds(colors, currentColumnColor) {
-  return colors.map(color => {
+function buildTableTds(xAxisColors, currentColor) {
+  return xAxisColors.map(color => {
     return `
       <td style="
         --color-1: ${ tinycolor(color).toHexString()};
-        --color-2: ${ tinycolor(currentColumnColor).toHexString() };
+        --color-2: ${ tinycolor(currentColor).toHexString() };
       ">
-        ${ tinycolor.readability(color, currentColumnColor).toFixed(2) }
+        ${ tinycolor.readability(color, currentColor).toFixed(2) }
       </td>
     `;
   }).join('');
@@ -33,10 +39,12 @@ function buildTableTds(colors, currentColumnColor) {
 /**
  * Build a TR rows for each color.
  *
- * @param {Array} colors
+ * @param {Array} xAxisColors
+ * @param {Array} yAxisColors
  */
-function buildTableTr(colors) {
-  return colors.map(color => {
+function buildTableTr(xAxisColors, yAxisColors) {
+
+  return yAxisColors.map((color, index) => {
     return `
       <tr scope="row">
         <th style="
@@ -45,7 +53,7 @@ function buildTableTr(colors) {
         ">
           ${ color }
         </th>
-        ${ buildTableTds(colors, color) }
+        ${ buildTableTds(xAxisColors, color) }
       </tr>
     `;
   }).join('');
@@ -54,11 +62,11 @@ function buildTableTr(colors) {
 /**
  * Create the first row header for the table.
  *
- * @param {Array} colors
+ * @param {Array} xAxisColors
  * @returns String
  */
-function buildTableRowHeader(colors) {
-  const headerCells =  colors.map(color => {
+function buildTableRowHeader(xAxisColors) {
+  const headerCells =  xAxisColors.map(color => {
     return `
       <th style="
           --color: ${ tinycolor(color).toHexString()};
@@ -80,14 +88,15 @@ function buildTableRowHeader(colors) {
 /**
  * Build the markup for the <table> element.
  *
- * @param {Array} colors
+ * @param {Array} xAxisColors
+ * @param {Array} yAxisColors
  * @returns String
  */
-function buildTable(colors) {
+function buildTable(xAxisColors, yAxisColors) {
   return `
     <table>
-      ${ buildTableRowHeader(colors) }
-      ${ buildTableTr(colors) }
+      ${ buildTableRowHeader(xAxisColors, yAxisColors) }
+      ${ buildTableTr(xAxisColors, yAxisColors) }
     </table>
   `;
 }
@@ -96,9 +105,11 @@ function buildTable(colors) {
  * Event listener for form submission.
  */
 document.querySelector('.color-input-form').addEventListener('submit', e => {
-  const colorInput = e.target.querySelector('textarea')
-  const colors = getInputColors(colorInput.value);
+  const colorXInput = e.target.querySelector('.color-input-1');
+  const colorYInput = e.target.querySelector('.color-input-2');
+  const xAxisColors = getInputColors(colorXInput.value);
+  const yAxisColors = colorYInput.value.trim().length ? getInputColors(colorYInput.value) : getInputColors(colorXInput.value);
 
   e.preventDefault(); // Don't reload the page.
-  document.querySelector('.table-container').innerHTML = buildTable(colors);
+  document.querySelector('.table-container').innerHTML = buildTable(xAxisColors, yAxisColors);
 });
