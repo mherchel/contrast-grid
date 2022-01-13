@@ -11,6 +11,40 @@ function getInputColors(string) {
 }
 
 /**
+ * Builds and sets the querystring, thereby saving the grid to the URL.
+ *
+ * @param {Array} xAxisColors - Array of valid color values
+ * @param {Array} yAxisColors - Array of valid color values
+ */
+function setQueryParams(xAxisColors, yAxisColors) {
+  const urlParams = new URLSearchParams(location.search);
+  urlParams.set('xAxisColors', xAxisColors.join('|'));
+
+  if (JSON.stringify(xAxisColors) !== JSON.stringify(yAxisColors)) {
+    urlParams.set('yAxisColors', yAxisColors.join('|'));
+  }
+  window.history.replaceState({}, '', `${location.pathname}?${urlParams}`);
+}
+
+/**
+ * Reads in the current queryString and returns arrays of colors.
+ *
+ * @returns {Object} - Object containing xAxisColors and yAxisColors arrays.
+ */
+function getQueryParams() {
+  const urlParams = new URLSearchParams(location.search);
+  const queryParams = ['xAxisColors', 'yAxisColors'];
+  const colorsObject = {}
+
+  queryParams.forEach(axis => {
+    // if (urlParams.get(axis)?.length) {
+      colorsObject[axis] = urlParams.get(axis)?.split('|');
+    // }
+  });
+  return colorsObject;
+}
+
+/**
  * Create the first row header (containing the x-axis color values).
  *
  * @param {Array} xAxisColors - Array of valid color values
@@ -97,9 +131,27 @@ function buildTable(xAxisColors, yAxisColors) {
 }
 
 /**
- * Event listener for form submission.
+ * Pulls colors from queryString into form elements.
+ *
+ * @param {Element} form - The form element to load querystring colors into.
  */
-document.querySelector('.color-input-form').addEventListener('submit', e => {
+function loadColors(form) {
+  const colorXInput = form.querySelector('.color-input-1');
+  const colorYInput = form.querySelector('.color-input-2');
+  const queryParams = getQueryParams();
+  const xAxisColors = queryParams?.xAxisColors;
+  const yAxisColors = queryParams?.yAxisColors;
+
+  colorXInput.value = Array.isArray(xAxisColors) ? xAxisColors.join('\n') : '';
+  colorYInput.value = Array.isArray(yAxisColors) ? yAxisColors.join('\n') : '';
+}
+
+/**
+ * Handles the form submission.
+ *
+ * @param {Event} e - The event object
+ */
+function handleSubmit(e) {
   const colorXInput = e.target.querySelector('.color-input-1');
   const colorYInput = e.target.querySelector('.color-input-2');
   const xAxisColors = getInputColors(colorXInput.value);
@@ -107,4 +159,22 @@ document.querySelector('.color-input-form').addEventListener('submit', e => {
 
   e.preventDefault(); // Don't reload the page.
   document.querySelector('.table-container').innerHTML = buildTable(xAxisColors, yAxisColors);
-});
+
+  setQueryParams(xAxisColors, yAxisColors);
+}
+
+/**
+ * Initialize everything.
+ */
+function init() {
+  const form = document.querySelector('.color-input-form');
+  form.addEventListener('submit', handleSubmit);
+
+  loadColors(form);
+  // Programmatically trigger submit event to create color grid table.
+  let submitEvent = new CustomEvent('submit');
+  form.dispatchEvent(submitEvent);
+}
+
+// Lets do this!
+init();
