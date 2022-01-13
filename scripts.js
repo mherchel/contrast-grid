@@ -1,5 +1,5 @@
 /**
- * Takes a string and makes an array of valid colors.
+ * Takes a string and returns an array of valid colors.
  *
  * @param {String} string - String containing colors delimited by line breaks
  * @returns {Array} - Array of valid colors
@@ -8,6 +8,32 @@ function getInputColors(string) {
   const inputArray = string.split('\n');
 
   return inputArray.filter(color => tinycolor(color).isValid());
+}
+
+/**
+ * Create the first row header (containing the x-axis color values).
+ *
+ * @param {Array} xAxisColors - Array of valid color values
+ * @returns {String} - String containing HTML
+ */
+function buildHeaderRow(xAxisColors) {
+  const headerCells = xAxisColors.map(color => {
+    return `
+      <th scope="col" style="
+          --color: ${tinycolor(color).toHexString()};
+          --text-color: ${tinycolor.mostReadable(color, ["#fff", "#000"]).toHexString()};
+      ">
+        ${color}
+      </th>
+    `;
+  }).join('');
+
+  return `
+    <tr>
+      <td></td>
+      ${headerCells}
+    </tr>
+  `;
 }
 
 /**
@@ -55,32 +81,6 @@ function buildDataRows(xAxisColors, yAxisColors) {
 }
 
 /**
- * Create the first row header for the table containing the x-axis color names.
- *
- * @param {Array} xAxisColors - Array of valid color values
- * @returns {String} - String containing HTML
- */
-function buildHeaderRow(xAxisColors) {
-  const headerCells =  xAxisColors.map(color => {
-    return `
-      <th scope="col" style="
-          --color: ${ tinycolor(color).toHexString()};
-          --text-color: ${tinycolor.mostReadable(color, ["#fff", "#000"]).toHexString() };
-      ">
-        ${ color }
-      </th>
-    `;
-  }).join('');
-
-  return `
-    <tr>
-      <td></td>
-      ${ headerCells }
-    </tr>
-  `;
-}
-
-/**
  * Build the markup for the <table> element.
  *
  * @param {Array} xAxisColors - Array of valid color values
@@ -90,7 +90,7 @@ function buildHeaderRow(xAxisColors) {
 function buildTable(xAxisColors, yAxisColors) {
   return `
     <table>
-      ${ buildHeaderRow(xAxisColors, yAxisColors) }
+      ${ buildHeaderRow(xAxisColors) }
       ${ buildDataRows(xAxisColors, yAxisColors) }
     </table>
   `;
