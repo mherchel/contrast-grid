@@ -20,9 +20,13 @@ function setQueryParams(xAxisColors, yAxisColors) {
   const urlParams = new URLSearchParams(location.search);
   urlParams.set('xAxisColors', xAxisColors.join('|'));
 
+  // If the X axis colors are different than the y axis colors, create a parameter, otherwise remove it.
   if (JSON.stringify(xAxisColors) !== JSON.stringify(yAxisColors)) {
     urlParams.set('yAxisColors', yAxisColors.join('|'));
+  } else {
+    urlParams.delete('yAxisColors');
   }
+
   window.history.replaceState({}, '', `${location.pathname}?${urlParams}`);
 }
 
@@ -135,7 +139,7 @@ function buildTable(xAxisColors, yAxisColors) {
  *
  * @param {Element} form - The form element to load querystring colors into.
  */
-function loadColors(form) {
+function loadColorsInto(form) {
   const colorXInput = form.querySelector('.color-input-1');
   const colorYInput = form.querySelector('.color-input-2');
   const queryParams = getQueryParams();
@@ -170,7 +174,8 @@ function init() {
   const form = document.querySelector('.color-input-form');
   form.addEventListener('submit', handleSubmit);
 
-  loadColors(form);
+  loadColorsInto(form);
+
   // Programmatically trigger submit event to create color grid table.
   let submitEvent = new CustomEvent('submit');
   form.dispatchEvent(submitEvent);
