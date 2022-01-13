@@ -1,8 +1,8 @@
 /**
  * Takes a string and makes an array of valid colors.
  *
- * @param {String} string
- * @returns Array
+ * @param {String} string - String containing colors delimited by line breaks
+ * @returns {Array} - Array of valid colors
  */
 function getInputColors(string) {
   const inputArray = string.split('\n');
@@ -13,18 +13,18 @@ function getInputColors(string) {
 /**
  * Build all <td> cells in a single row.
  *
- * @param {Array} xAxisColors
- * @param {String} currentColor
- * @returns String
+ * @param {Array} xAxisColors - Array of valid color values
+ * @param {String} compareColor - String containing a single valid color
+ * @returns {String} - String containing HTML
  */
-function buildTableTds(xAxisColors, currentColor) {
+function buildTableTds(xAxisColors, compareColor) {
   return xAxisColors.map(color => {
     return `
       <td style="
         --color-1: ${ tinycolor(color).toHexString()};
-        --color-2: ${ tinycolor(currentColor).toHexString() };
+        --color-2: ${ tinycolor(compareColor).toHexString() };
       ">
-        ${ tinycolor.readability(color, currentColor).toFixed(2) }
+        ${ tinycolor.readability(color, compareColor).toFixed(2) }
       </td>
     `;
   }).join('');
@@ -33,13 +33,13 @@ function buildTableTds(xAxisColors, currentColor) {
 /**
  * Build all <tr> rows (one for each color on the Y axis).
  *
- * @param {Array} xAxisColors
- * @param {Array} yAxisColors
- * @returns String
+ * @param {Array} xAxisColors - Array of valid color values
+ * @param {Array} yAxisColors - Array of valid color values
+ * @returns {String} - String containing HTML
  */
-function buildTableTr(xAxisColors, yAxisColors) {
+function buildDataRows(xAxisColors, yAxisColors) {
 
-  return yAxisColors.map((color, index) => {
+  return yAxisColors.map(color => {
     return `
       <tr scope="row">
         <th style="
@@ -55,12 +55,12 @@ function buildTableTr(xAxisColors, yAxisColors) {
 }
 
 /**
- * Create the first row header for the table.
+ * Create the first row header for the table containing the x-axis color names.
  *
- * @param {Array} xAxisColors
- * @returns String
+ * @param {Array} xAxisColors - Array of valid color values
+ * @returns {String} - String containing HTML
  */
-function buildTableRowHeader(xAxisColors) {
+function buildHeaderRow(xAxisColors) {
   const headerCells =  xAxisColors.map(color => {
     return `
       <th style="
@@ -83,15 +83,15 @@ function buildTableRowHeader(xAxisColors) {
 /**
  * Build the markup for the <table> element.
  *
- * @param {Array} xAxisColors
- * @param {Array} yAxisColors
- * @returns String
+ * @param {Array} xAxisColors - Array of valid color values
+ * @param {Array} yAxisColors - Array of valid color values
+ * @returns {String} - String containing HTML
  */
 function buildTable(xAxisColors, yAxisColors) {
   return `
     <table>
-      ${ buildTableRowHeader(xAxisColors, yAxisColors) }
-      ${ buildTableTr(xAxisColors, yAxisColors) }
+      ${ buildHeaderRow(xAxisColors, yAxisColors) }
+      ${ buildDataRows(xAxisColors, yAxisColors) }
     </table>
   `;
 }
