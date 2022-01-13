@@ -1,14 +1,8 @@
-function isTWoSetsOfColors() {
-  const colorInput2 = document.querySelector('.colors-input-2');
-  return colorInput2.value.length;
-}
-
-
 /**
  * Takes a string and makes an array of valid colors.
  *
  * @param {String} string
- * @returns
+ * @returns Array
  */
 function getInputColors(string) {
   const inputArray = string.split('\n');
@@ -17,11 +11,11 @@ function getInputColors(string) {
 }
 
 /**
- * Build all <td> table cells in a row.
+ * Build all <td> cells in a single row.
  *
  * @param {Array} xAxisColors
  * @param {String} currentColor
- * @returns
+ * @returns String
  */
 function buildTableTds(xAxisColors, currentColor) {
   return xAxisColors.map(color => {
@@ -37,10 +31,11 @@ function buildTableTds(xAxisColors, currentColor) {
 }
 
 /**
- * Build a TR rows for each color.
+ * Build all <tr> rows (one for each color on the Y axis).
  *
  * @param {Array} xAxisColors
  * @param {Array} yAxisColors
+ * @returns String
  */
 function buildTableTr(xAxisColors, yAxisColors) {
 
