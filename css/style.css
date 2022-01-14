@@ -10,7 +10,7 @@
 }
 
 body {
-  width: max-content; /* Necessary for sticky left <header> */
+  width: fit-content; /* Necessary for sticky left <header> */
   min-width: 100%;
   margin: 0;
   font-family: sans-serif;
@@ -25,7 +25,7 @@ a:focus {
 /* Header styles. */
 header {
   position: sticky;
-  left: 0;
+  left: var(--default-container-padding);
   max-width: 100ch;
   padding: var(--default-container-padding);
 }
@@ -38,9 +38,16 @@ header h1 a {
 /* Main styles. */
 main {
   display: flex;
+  flex-direction: column;
   gap: var(--gap);
   margin: 20px 0 40px;
   padding: var(--default-container-padding);
+}
+
+@media (min-width: 1000px) {
+  main {
+    flex-direction: row;
+  }
 }
 
 main a {
@@ -57,9 +64,15 @@ main a {
 /* Footer styles. */
 footer {
   min-height: 50vh;
-  padding: 40px var(--default-container-padding) 40px calc(var(--default-container-padding) + var(--sidebar-width) + var(--gap));
+  padding: var(--default-container-padding);
   background: var(--blue);
   color: white;
+}
+
+@media (min-width: 1000px) {
+  footer {
+    padding: 40px var(--default-container-padding) 40px calc(var(--default-container-padding) + var(--sidebar-width) + var(--gap));
+  }
 }
 
 footer a {
