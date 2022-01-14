@@ -20,6 +20,7 @@ form {
 }
 
 textarea {
+  display: block;
   margin-top: 4px; /* Room for focus-ring. */
   border: solid 2px #666;
   width: 100%;
