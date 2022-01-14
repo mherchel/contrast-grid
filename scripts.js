@@ -168,7 +168,10 @@
     const yAxisColors = colorYInput.value.trim().length ? getInputColors(colorYInput.value) : getInputColors(colorXInput.value);
 
     e.preventDefault(); // Don't reload the page.
-    document.querySelector('.table-container').innerHTML = buildTable(xAxisColors, yAxisColors);
+
+    if (xAxisColors.length) {
+      document.querySelector('.table-container').innerHTML = buildTable(xAxisColors, yAxisColors);
+    }
 
     setQueryParams(xAxisColors, yAxisColors);
   }
