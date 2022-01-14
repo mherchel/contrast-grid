@@ -1,3 +1,7 @@
+:root {
+  --blue: #0f6292;
+}
+
 *, *:before, *:after {
   box-sizing: border-box;
 }
@@ -6,15 +10,26 @@ body {
   font-family: sans-serif;
 }
 
+.layout-container {
+  display: flex;
+  gap: 20px;
+  margin: 80px 0;
+}
+
+/* Table styles. */
 .table-container {
   --hover-border-width: 3px;
-  --hover-border-color: black;
+  --hover-border-color: white;
+}
+
+table {
+  border-spacing: 0;
+  font-size: 14px;
 }
 
 td, th {
-  padding: 10px;
+  padding: 15px;
   text-align: start;
-  border: solid var(--hover-border-width) transparent;
 }
 
 th {
@@ -32,36 +47,72 @@ tr:first-child th span {
   transform: rotate(180deg);
 }
 
+/* Form styles. */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+textarea {
+  border: solid 2px black;
+  padding: 5px;
+  min-height: 200px;;
+}
+
 button {
-  display: block;
+  margin-top: auto;
+  border: 0;
+  background: #0f6292;
+  appearance: none;
+  color: white;
+  padding: 15px 20px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 2px;
 }
 
-.layout-container {
-  display: grid;
-  grid-template-columns: 200px auto;
+button:hover {
+  background-color: #0d77b5;
 }
 
-tr:hover :is(th, td),
-:is(th, td).is-highlighted {
+button:active {
+  background: #0f6292;
+}
+
+/* Crosshair on hover styles. */
+tr :is(th, td),
+:is(th, td) {
   position: relative;
 }
 
-:is(th, td).is-highlighted:before {
+:is(th, td):before,
+tr :is(th, td):after {
   content: "";
   position: absolute;
-  left: 100%;
-  top: calc(-2 * var(--hover-border-width));
-  width: var(--hover-border-width);
-  height: calc(100% + 4 * var(--hover-border-width));
   background: var(--hover-border-color);
+  mix-blend-mode: difference;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.2s;
 }
 
-tr:hover :is(th, td):after {
-  content: "";
-  position: absolute;
-  left: calc(-1 * var(--hover-border-width));
-  top: 100%;
-  width: calc(100% + 3 * var(--hover-border-width));
+:is(th, td):before {
+  right: 0;
+  top: 0;
+  width: var(--hover-border-width);
+  height: 100%;
+}
+
+tr :is(th, td):after {
+  left: 0;
+  bottom: 0;
+  width: 100%;
   height: var(--hover-border-width);
-  background: var(--hover-border-color);
+}
+
+:is(th, td).is-highlighted:before,
+tr:hover :is(th, td):after {
+  opacity: 1;
 }
