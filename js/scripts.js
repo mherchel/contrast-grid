@@ -18,7 +18,7 @@
    * @param {Array} yAxisColors - Array of valid color values
    */
   function setQueryParams(xAxisColors, yAxisColors) {
-    if (xAxisColors.length) {
+    if (xAxisColors?.length) {
       const urlParams = new URLSearchParams(location.search);
 
       urlParams.set('xAxisColors', xAxisColors.join('|'));
@@ -163,7 +163,7 @@
    * @param {Array} yAxisColors - Array of valid color values
    */
   function writeTableToDOM(xAxisColors, yAxisColors) {
-    if (xAxisColors.length) {
+    if (xAxisColors?.length) {
       document.querySelector('.table-container').innerHTML = buildTable(xAxisColors, yAxisColors);
     }
 
