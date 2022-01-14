@@ -85,7 +85,7 @@ th {
 }
 
 td {
-  background-color: var(--color-1);
+  background-color: var(--color-1, white);
   color: var(--color-2);
 }
 
@@ -93,6 +93,19 @@ tr:first-child th span {
   writing-mode: vertical-lr;
   transform: rotate(180deg);
 }
+
+tr:first-child {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+:is(td, th):first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+
 
 /* Form styles. */
 form {
