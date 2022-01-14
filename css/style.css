@@ -1,5 +1,5 @@
 :root {
-  --blue: #0f6292;
+  --color-primary: #0f6292;
   --default-container-padding: 10px;
   --sidebar-width: 250px;
   --gap: 20px;
@@ -51,7 +51,7 @@ main {
 }
 
 main a {
-  color: var(--blue);
+  color: var(--color-primary);
 }
 
 .placeholder {
@@ -65,7 +65,7 @@ main a {
 footer {
   min-height: 50vh;
   padding: var(--default-container-padding);
-  background: var(--blue);
+  background: var(--color-primary);
   color: white;
 }
 
@@ -77,4 +77,19 @@ footer {
 
 footer a {
   color: white;
+}
+
+/* Utility styles. */
+.show-large {
+  display: none;
+}
+
+@media (min-width: 1000px) {
+  .show-large {
+    display: revert;
+  }
+
+  .show-small {
+    display: none;
+  }
 }

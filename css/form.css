@@ -43,7 +43,7 @@ button {
 
 textarea:focus,
 button:focus {
-  outline: solid 4px var(--blue);
+  outline: solid 4px var(--color-primary);
   outline-offset: 2px;
 }
 

@@ -1,12 +1,12 @@
 
 /* Table styles. */
 .table-container {
-  --hover-border-width: 3px;
+  --hover-border-width: 5px;
   --hover-border-color: white;
   --sidebar-width: 250px;
 
   flex-grow: 1;
-  margin-top: 25px;
+  margin-top: 25px; /* Height of the "x axis colors" <label>. */
 }
 
 table {
@@ -49,10 +49,15 @@ tr:first-child {
   z-index: 2;
 }
 
+tr:first-child :is(th, td) {
+  border-bottom: solid 1px white;
+}
+
 :is(td, th):first-child {
   position: sticky;
   left: 0;
   z-index: 2;
+  border-right: solid 1px white;
 }
 
 /* Crosshair on hover styles. */
