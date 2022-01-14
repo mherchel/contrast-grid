@@ -1,0 +1,92 @@
+
+/* Table styles. */
+.table-container {
+  --hover-border-width: 3px;
+  --hover-border-color: white;
+  --sidebar-width: 250px;
+
+  flex-grow: 1;
+  margin-top: 25px;
+}
+
+table {
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+td, th {
+  padding: 15px;
+  text-align: start;
+  transition: color 0.2s;
+  vertical-align: baseline;
+  /* If there's a 💩 load of cells, this can speed up the initial render. */
+  content-visibility: auto;
+  contain-intrinsic-size: 50px 50px;
+}
+
+td:hover {
+  color: var(--hover-text-color);
+}
+
+th {
+  background-color: var(--color);
+  color: var(--text-color);
+}
+
+td {
+  background-color: var(--color-1, white);
+  color: var(--color-2);
+}
+
+tr:first-child th span {
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
+}
+
+tr:first-child {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+:is(td, th):first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+
+/* Crosshair on hover styles. */
+tr :is(th, td),
+:is(th, td) {
+  position: relative;
+}
+
+:is(th, td):before,
+tr :is(th, td):after {
+  content: "";
+  position: absolute;
+  background: var(--hover-border-color);
+  mix-blend-mode: difference;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+:is(th, td):before {
+  right: 0;
+  top: 0;
+  width: var(--hover-border-width);
+  height: 100%;
+}
+
+tr :is(th, td):after {
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: var(--hover-border-width);
+}
+
+:is(th, td).is-highlighted:before,
+tr:hover :is(th, td):after {
+  opacity: 1;
+}

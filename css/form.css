@@ -1,0 +1,43 @@
+/* Form styles. */
+form {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  width: var(--sidebar-width);
+}
+
+textarea {
+  margin-top: 4px; /* Room for focus-ring. */
+  border: solid 2px #666;
+  width: 100%;
+  padding: 10px;
+  min-height: 200px;
+  line-height: 1.5;
+}
+
+button {
+  border: 0;
+  background: #0f6292;
+  appearance: none;
+  color: white;
+  padding: 15px 20px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+textarea:focus,
+button:focus {
+  outline: solid 4px var(--blue);
+  outline-offset: 2px;
+}
+
+button:hover {
+  background-color: #0d77b5;
+}
+
+button:active {
+  background: #0f6292;
+}

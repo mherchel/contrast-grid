@@ -1,0 +1,67 @@
+:root {
+  --blue: #0f6292;
+  --default-container-padding: 10px;
+  --sidebar-width: 250px;
+  --gap: 20px;
+}
+
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+body {
+  width: max-content; /* Necessary for sticky left <header> */
+  min-width: 100%;
+  margin: 0;
+  font-family: sans-serif;
+  line-height: 1.4;
+}
+
+a:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Header styles. */
+header {
+  position: sticky;
+  left: 0;
+  max-width: 100ch;
+  padding: var(--default-container-padding);
+}
+
+header h1 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Main styles. */
+main {
+  display: flex;
+  gap: var(--gap);
+  margin: 20px 0 40px;
+  padding: var(--default-container-padding);
+}
+
+main a {
+  color: var(--blue);
+}
+
+.placeholder {
+  height: 100%;
+  padding: 20px;
+  background: #f1f4f7;
+  font-size: 18px;
+}
+
+/* Footer styles. */
+footer {
+  min-height: 50vh;
+  padding: 40px var(--default-container-padding) 40px calc(var(--default-container-padding) + var(--sidebar-width) + var(--gap));
+  background: var(--blue);
+  color: white;
+}
+
+footer a {
+  color: white;
+}

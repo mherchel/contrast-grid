@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Color Contrast Grid - Create a color grid showing contrast ratios</title>
   <meta name="description" content="Free lightweight online tool that generates a color grid showing contrast ratios for each color pairing.">
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/form.css">
+  <link rel="stylesheet" href="/css/table.css">
   <meta property="og:image" content="https://contrastgrid.com/screenshot.webp" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:description" content="Free lightweight online tool that generates a color grid showing contrast ratios for each color pairing." />
@@ -23,7 +25,7 @@
     <form class="color-input-form">
       <label>
         <div>X axis colors (required)</div>
-        <textarea class="color-input-1" rows="5" required></textarea>
+        <textarea placeholder="hsl(202, 79%, 50%)&#10;#ff0033&#10;rebeccapurple" class="color-input-1" rows="5" required></textarea>
       </label>
       <label>
         <div>Y axis colors (optional)</div>
@@ -47,7 +49,7 @@
     <p>The code for this website is available at <a href="https://github.com/mherchel/contrast-grid">https://github.com/mherchel/contrast-grid</a>.</p>
     <p>The concept of this site is inspired by <a href="https://contrast-grid.eightshapes.com/">Eightshapes' Contrast Grid </a>, as well as <a href="https://metageeky.github.io/contrast_table_analyzer/contrast-table.html">Kate Deibel's Contrast Table Analyzer</a>.</p>
   </footer>
-  <script src="/tinycolor-min.js"></script>
-  <script src="/scripts.js"></script>
+  <script src="/js/tinycolor-min.js"></script>
+  <script src="/js/scripts.js"></script>
 </body>
 </html>
