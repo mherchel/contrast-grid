@@ -17,17 +17,20 @@ function getInputColors(string) {
  * @param {Array} yAxisColors - Array of valid color values
  */
 function setQueryParams(xAxisColors, yAxisColors) {
-  const urlParams = new URLSearchParams(location.search);
-  urlParams.set('xAxisColors', xAxisColors.join('|'));
+  if (xAxisColors.length) {
+    const urlParams = new URLSearchParams(location.search);
 
-  // If the X axis colors are different than the y axis colors, create a parameter, otherwise remove it.
-  if (JSON.stringify(xAxisColors) !== JSON.stringify(yAxisColors)) {
-    urlParams.set('yAxisColors', yAxisColors.join('|'));
-  } else {
-    urlParams.delete('yAxisColors');
+    urlParams.set('xAxisColors', xAxisColors.join('|'));
+
+    // If the X axis colors are different than the y axis colors, create a parameter, otherwise remove it.
+    if (JSON.stringify(xAxisColors) !== JSON.stringify(yAxisColors)) {
+      urlParams.set('yAxisColors', yAxisColors.join('|'));
+    } else {
+      urlParams.delete('yAxisColors');
+    }
+
+    window.history.replaceState({}, '', `${location.pathname}?${urlParams}`);
   }
-
-  window.history.replaceState({}, '', `${location.pathname}?${urlParams}`);
 }
 
 /**
