@@ -39,7 +39,7 @@
    *
    * @returns {Object} - Object containing xAxisColors and yAxisColors arrays.
    */
-  function getQueryParams() {
+  function getColorsFromQueryParams() {
     const urlParams = new URLSearchParams(location.search);
     const queryParams = ['xAxisColors', 'yAxisColors'];
     const colorsObject = {}
@@ -157,6 +157,20 @@
   }
 
   /**
+   * Writes the <table> element HTML to the DOM and updates the query string.
+   *
+   * @param {Array} xAxisColors - Array of valid color values
+   * @param {Array} yAxisColors - Array of valid color values
+   */
+  function writeTableToDOM(xAxisColors, yAxisColors) {
+    if (xAxisColors.length) {
+      document.querySelector('.table-container').innerHTML = buildTable(xAxisColors, yAxisColors);
+    }
+
+    setQueryParams(xAxisColors, yAxisColors);
+  }
+
+  /**
    * Handles the form submission.
    *
    * @param {Event} e - The submit event object
@@ -166,14 +180,9 @@
     const colorYInput = e.target.querySelector('.color-input-2');
     const xAxisColors = getInputColors(colorXInput.value);
     const yAxisColors = colorYInput.value.trim().length ? getInputColors(colorYInput.value) : getInputColors(colorXInput.value);
-
     e.preventDefault(); // Don't reload the page.
 
-    if (xAxisColors.length) {
-      document.querySelector('.table-container').innerHTML = buildTable(xAxisColors, yAxisColors);
-    }
-
-    setQueryParams(xAxisColors, yAxisColors);
+    writeTableToDOM(xAxisColors, yAxisColors);
   }
 
   /**
@@ -201,13 +210,14 @@
   function init() {
     const form = document.querySelector('.color-input-form');
     const tableContainer = document.querySelector('.table-container');
+    const colorsFromParams = getColorsFromQueryParams();
+    const xAxisColors = colorsFromParams.xAxisColors;
+    const yAxisColors = colorsFromParams.yAxisColors ? colorsFromParams.yAxisColors : xAxisColors;
+
     form.addEventListener('submit', handleSubmit);
 
-    loadColorsInto(form, getQueryParams());
-
-    // Programmatically trigger submit event to create color grid table.
-    let submitEvent = new CustomEvent('submit');
-    form.dispatchEvent(submitEvent);
+    loadColorsInto(form, getColorsFromQueryParams());
+    writeTableToDOM(xAxisColors, yAxisColors);
 
     tableContainer.addEventListener('mouseover', handleTableMouseover);
   }
