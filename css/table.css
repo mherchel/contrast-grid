@@ -41,6 +41,7 @@ td {
 tr:first-child th span {
   writing-mode: vertical-lr;
   transform: rotate(180deg);
+  white-space: nowrap;
 }
 
 tr:first-child {
