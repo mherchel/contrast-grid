@@ -92,6 +92,7 @@
         <td style="
           --color-1: ${ tinycolor(color).toHexString() };
           --color-2: ${ tinycolor(compareColor).toHexString() };
+          --hover-text-color: ${ tinycolor.mostReadable(color, ["#fff", "#000"]).toHexString() };
         ">
           ${ tinycolor.readability(color, compareColor).toFixed(2) }
         </td>
