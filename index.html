@@ -8,28 +8,28 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <main>
-    <h1>Build a Color Contrast Grid</h1>
+  <header>
+    <h1><a href="/">Build a Color Contrast Grid</a></h1>
     <p>Enter one color per line (this can be almost any format including Hex, RGB, HSL, HSLA, etc). If you choose to not fill in the "Y axis colors" field, we will compare the X axis against itself.</p>
-    <div class="layout-container">
-      <form class="color-input-form">
-        <label>
-          <div>X axis colors (required)</div>
-          <textarea class="color-input-1" rows="5" required></textarea>
-        </label>
-        <label>
-          <div>Y axis colors (optional)</div>
-          <textarea class="color-input-2" rows="5"></textarea>
-        </label>
-        <button>Build Contrast Grid</button>
-      </form>
-      <div class="table-container"></div>
-    </div>
-    <footer>
-      <p>The code for this website is available at <a href="https://github.com/mherchel/contrast-grid">https://github.com/mherchel/contrast-grid</a>.</p>
-      <p>The concept of this site is inspired by <a href="https://contrast-grid.eightshapes.com/">Eightshapes' Contrast Grid </a>, as well as <a href="https://metageeky.github.io/contrast_table_analyzer/contrast-table.html">Kate Deibel's Contrast Table Analyzer</a>.</p>
-    </footer>
+  </header>
+  <main class="layout-container">
+    <form class="color-input-form">
+      <label>
+        <div>X axis colors (required)</div>
+        <textarea class="color-input-1" rows="5" required></textarea>
+      </label>
+      <label>
+        <div>Y axis colors (optional)</div>
+        <textarea class="color-input-2" rows="5"></textarea>
+      </label>
+      <button>Build Contrast Grid</button>
+    </form>
+    <div class="table-container"></div>
   </main>
+  <footer>
+    <p>The code for this website is available at <a href="https://github.com/mherchel/contrast-grid">https://github.com/mherchel/contrast-grid</a>.</p>
+    <p>The concept of this site is inspired by <a href="https://contrast-grid.eightshapes.com/">Eightshapes' Contrast Grid </a>, as well as <a href="https://metageeky.github.io/contrast_table_analyzer/contrast-table.html">Kate Deibel's Contrast Table Analyzer</a>.</p>
+  </footer>
   <script src="/tinycolor-min.js"></script>
   <script src="/scripts.js"></script>
 </body>

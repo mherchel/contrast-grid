@@ -1,5 +1,8 @@
 :root {
   --blue: #0f6292;
+  --default-container-padding: 10px;
+  --sidebar-width: 250px;
+  --gap: 20px;
 }
 
 *, *:before, *:after {
@@ -7,19 +10,40 @@
 }
 
 body {
+  margin: 0;
   font-family: sans-serif;
 }
 
-.layout-container {
+a:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Header styles. */
+header {
+  padding: var(--default-container-padding);
+}
+
+h1 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Main styles. */
+main {
   display: flex;
-  gap: 20px;
-  margin: 80px 0;
+  gap: var(--gap);
+  margin: 20px 0 40px;
+  padding: var(--default-container-padding);
 }
 
 /* Table styles. */
 .table-container {
   --hover-border-width: 3px;
   --hover-border-color: white;
+  --sidebar-width: 250px;
+
+  margin-top: 20px;
 }
 
 table {
@@ -51,13 +75,17 @@ tr:first-child th span {
 form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--gap);
+  width: var(--sidebar-width);
 }
 
 textarea {
+  margin-top: 4px; /* Room for focus-ring. */
   border: solid 2px black;
+  width: 100%;
   padding: 5px;
-  min-height: 200px;;
+  min-height: 200px;
+  line-height: 1.2;
 }
 
 button {
@@ -71,6 +99,12 @@ button {
   font-size: 16px;
   cursor: pointer;
   border-radius: 2px;
+}
+
+textarea:focus,
+button:focus {
+  outline: solid 4px var(--blue);
+  outline-offset: 2px;
 }
 
 button:hover {
@@ -115,4 +149,16 @@ tr :is(th, td):after {
 :is(th, td).is-highlighted:before,
 tr:hover :is(th, td):after {
   opacity: 1;
+}
+
+/* Footer styles. */
+footer {
+  min-height: 50vh;
+  padding: 40px var(--default-container-padding) 40px calc(var(--default-container-padding) + var(--sidebar-width) + var(--gap));
+  background: var(--blue);
+  color: white;
+}
+
+footer a {
+  color: white;
 }
