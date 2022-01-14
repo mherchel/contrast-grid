@@ -64,7 +64,9 @@
             --color: ${tinycolor(color).toHexString()};
             --text-color: ${tinycolor.mostReadable(color, ["#fff", "#000"]).toHexString()};
         ">
-          ${color}
+          <span>
+            ${color}
+          </span>
         </th>
       `;
     }).join('');
@@ -156,7 +158,7 @@
   /**
    * Handles the form submission.
    *
-   * @param {Event} e - The event object
+   * @param {Event} e - The submit event object
    */
   function handleSubmit(e) {
     const colorXInput = e.target.querySelector('.color-input-1');
@@ -171,10 +173,30 @@
   }
 
   /**
+   * Handles mouseover event for the table container. This add CSS classes to
+   * the <th> and <td> cells so that the user can easily distinguish what
+   * columns they are hovering above.
+   *
+   * @param {Event} e - The mouseover event object.
+   */
+  function handleTableMouseover(e) {
+    document.querySelectorAll('.is-highlighted').forEach(el => el.classList.remove('is-highlighted'));
+    if (e.target.matches(':is(th, td), :is(th, td) *')) {
+      const tableCell = e.target.closest('th, td');
+      const index = tableCell.cellIndex + 1;
+
+      tableCell.closest('table').querySelectorAll(`:is(th, td):nth-child(${index})`).forEach(tableCell => {
+        tableCell.classList.add('is-highlighted');
+      });
+    }
+  }
+
+  /**
    * Initialize everything.
    */
   function init() {
     const form = document.querySelector('.color-input-form');
+    const tableContainer = document.querySelector('.table-container');
     form.addEventListener('submit', handleSubmit);
 
     loadColorsInto(form, getQueryParams());
@@ -182,6 +204,8 @@
     // Programmatically trigger submit event to create color grid table.
     let submitEvent = new CustomEvent('submit');
     form.dispatchEvent(submitEvent);
+
+    tableContainer.addEventListener('mouseover', handleTableMouseover);
   }
 
   // Lets do this!

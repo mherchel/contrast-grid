@@ -1,6 +1,20 @@
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: sans-serif;
+}
+
+.table-container {
+  --hover-border-width: 3px;
+  --hover-border-color: black;
+}
+
 td, th {
-  padding: 4px;
+  padding: 10px;
   text-align: start;
+  border: solid var(--hover-border-width) transparent;
 }
 
 th {
@@ -13,6 +27,11 @@ td {
   color: var(--color-2);
 }
 
+tr:first-child th span {
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
+}
+
 button {
   display: block;
 }
@@ -20,4 +39,29 @@ button {
 .layout-container {
   display: grid;
   grid-template-columns: 200px auto;
+}
+
+tr:hover :is(th, td),
+:is(th, td).is-highlighted {
+  position: relative;
+}
+
+:is(th, td).is-highlighted:before {
+  content: "";
+  position: absolute;
+  left: 100%;
+  top: calc(-2 * var(--hover-border-width));
+  width: var(--hover-border-width);
+  height: calc(100% + 4 * var(--hover-border-width));
+  background: var(--hover-border-color);
+}
+
+tr:hover :is(th, td):after {
+  content: "";
+  position: absolute;
+  left: calc(-1 * var(--hover-border-width));
+  top: 100%;
+  width: calc(100% + 3 * var(--hover-border-width));
+  height: var(--hover-border-width);
+  background: var(--hover-border-color);
 }
