@@ -45,7 +45,8 @@
     const colorsObject = {}
 
     queryParams.forEach(axis => {
-      colorsObject[axis] = urlParams.get(axis)?.split('|');
+      paramsArray = urlParams.get(axis)?.split('|');
+      colorsObject[axis] = paramsArray?.filter(color => tinycolor(color).isValid());
     });
 
     return colorsObject;
