@@ -6,7 +6,7 @@ This repository is the codebase for [ContrastGrid.com](https://contrastgrid.com/
 
 This online tool takes one or more lists of colors (in most common formats) and generates a grid matrix showing the colors’ contrast ratio against each other.
 
-This is useful when evaluating color systems, and which colors can be used together while still remaining accessible (per [WCAG 2.1 1.4.3 Minimum Contrast Success Criterion](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html).
+This is useful when evaluating color systems, and which colors can be paired together while still remaining accessible (per [WCAG 2.1 1.4.3 Minimum Contrast Success Criterion](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html)).
 
 ![Screenshot](screenshot.webp)
 
