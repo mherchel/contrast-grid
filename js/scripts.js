@@ -145,16 +145,19 @@
    * Loads existing colors into form inputs.
    *
    * @param {Element} form - The form element to load querystring colors into.
-   * @param {Object} - Object containing xAxisColors and yAxisColors arrays.
+   * @param {Array} xAxisColors - Array of valid color values
+   * @param {Array} yAxisColors - Array of valid color values
    */
-  function loadColorsInto(form, queryParams) {
+  function hydrateForm(form, xAxisColors, yAxisColors) {
     const colorXInput = form.querySelector('.color-input-1');
     const colorYInput = form.querySelector('.color-input-2');
-    const xAxisColors = queryParams?.xAxisColors;
-    const yAxisColors = queryParams?.yAxisColors;
 
     colorXInput.value = Array.isArray(xAxisColors) ? xAxisColors.join('\n') : '';
-    colorYInput.value = Array.isArray(yAxisColors) ? yAxisColors.join('\n') : '';
+
+    // If y-axis colors are exactly the same as the x-axis, don't populate the textarea.
+    if (JSON.stringify(xAxisColors) !== JSON.stringify(yAxisColors)) {
+      colorYInput.value = Array.isArray(yAxisColors) ? yAxisColors.join('\n') : '';
+    }
   }
 
   /**
@@ -216,11 +219,10 @@
     const yAxisColors = colorsFromParams.yAxisColors ? colorsFromParams.yAxisColors : xAxisColors;
 
     form.addEventListener('submit', handleSubmit);
-
-    loadColorsInto(form, getColorsFromQueryParams());
-    writeTableToDOM(xAxisColors, yAxisColors);
-
     tableContainer.addEventListener('mouseover', handleTableMouseover);
+
+    hydrateForm(form, xAxisColors, yAxisColors);
+    writeTableToDOM(xAxisColors, yAxisColors);
   }
 
   // Lets do this!
