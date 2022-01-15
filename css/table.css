@@ -19,9 +19,6 @@ td, th {
   text-align: start;
   transition: color 0.2s;
   vertical-align: baseline;
-  /* If there's a 💩 load of cells, this can speed up the initial render. */
-  content-visibility: auto;
-  contain-intrinsic-size: 50px 50px;
 }
 
 td:hover {
