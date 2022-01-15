@@ -31,7 +31,7 @@ textarea {
 
 button {
   border: 0;
-  background: #0f6292;
+  background: var(--color-primary);
   appearance: none;
   color: white;
   padding: 15px 20px;
@@ -48,9 +48,9 @@ button:focus {
 }
 
 button:hover {
-  background-color: #0d77b5;
+  background-color: var(--color-primary-light);
 }
 
 button:active {
-  background: #0f6292;
+  background: var(--color-primary);
 }
