@@ -30,7 +30,7 @@
         urlParams.delete('yAxisColors');
       }
 
-      window.history.replaceState({}, '', `${location.pathname}?${urlParams}`);
+      window.history.pushState({}, '', `${location.pathname}?${urlParams}`);
     }
   }
 
@@ -165,13 +165,14 @@
    *
    * @param {Array} xAxisColors - Array of valid color values
    * @param {Array} yAxisColors - Array of valid color values
+   * @param {Boolean} updateQueryParams - Should the query string be updated to reflect the new colors?
    */
-  function writeTableToDOM(xAxisColors, yAxisColors) {
+  function writeTableToDOM(xAxisColors, yAxisColors, updateQueryParams = true) {
     if (xAxisColors?.length) {
       document.querySelector('.table-container').innerHTML = buildTable(xAxisColors, yAxisColors);
     }
 
-    setQueryParams(xAxisColors, yAxisColors);
+    if (updateQueryParams) setQueryParams(xAxisColors, yAxisColors);
   }
 
   /**
@@ -209,6 +210,20 @@
   }
 
   /**
+   * Handle the popstate event, which occurs when the page is navigated to using
+   * the browsers' "back", and "forward" buttons.
+   */
+  function handlePopstate() {
+    const form = document.querySelector('.color-input-form');
+    const colorsFromParams = getColorsFromQueryParams();
+    const xAxisColors = colorsFromParams.xAxisColors;
+    const yAxisColors = colorsFromParams.yAxisColors ? colorsFromParams.yAxisColors : xAxisColors;
+
+    hydrateForm(form, xAxisColors, yAxisColors);
+    writeTableToDOM(xAxisColors, yAxisColors, false);
+  }
+
+  /**
    * Initialize everything.
    */
   function init() {
@@ -218,6 +233,7 @@
     const xAxisColors = colorsFromParams.xAxisColors;
     const yAxisColors = colorsFromParams.yAxisColors ? colorsFromParams.yAxisColors : xAxisColors;
 
+    window.addEventListener('popstate', handlePopstate);
     form.addEventListener('submit', handleSubmit);
     tableContainer.addEventListener('mouseover', handleTableMouseover);
 
