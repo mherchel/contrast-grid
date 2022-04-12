@@ -12,6 +12,7 @@
 table {
   border-spacing: 0;
   font-size: 14px;
+  forced-color-adjust: none;
 }
 
 td, th {
@@ -49,6 +50,10 @@ tr:first-child {
 
 tr:first-child :is(th, td) {
   border-bottom: solid 1px white;
+}
+
+tr:first-child td:first-child {
+  forced-color-adjust: auto;
 }
 
 :is(td, th):first-child {
