@@ -98,3 +98,7 @@ tr :is(th, td):after {
 tr:hover :is(th, td):after {
   opacity: 1;
 }
+
+.color-name {
+  font-size: 16px;
+}

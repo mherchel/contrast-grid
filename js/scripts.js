@@ -1,9 +1,9 @@
 ((tinycolor) => {
   /**
-   * Takes a string and returns an array of valid colors.
+   * Takes a string and returns an array of objects containing names, colors.
    *
    * @param {String} string - String containing colors delimited by line breaks
-   * @returns {Array} - Array containing objects of colors and otional name strings.
+   * @returns {Array} - Array containing objects of colors and optional name strings.
    *  - {String} color - valid color
    *  - {String} [name] - optional name for the color
    */
@@ -12,26 +12,26 @@
     const outputArray = [];
 
     inputArray.forEach(line => {
-      const lineArray = line.split(':'); // split lines by comma or colon
+      const lineArray = line.split(':');
       const data = {};
       let lineHasValidColor = false;
 
       lineArray.forEach((item, index) => {
         if (index >= 2) return;
-        item = item.replaceAll(/;(.*)/g, '').trim(); // Remove semicolon and anything after it, and trim.
+        item = item.replaceAll(/;(.*)/g, '').trim(); // Remove semicolon and anything after it, then trim.
+        item = item.replaceAll(/,$/g, '').trim(); // If a comma is the last character, yank that sucka out (this is useful for Sass maps of colors).
         lineHasValidColor = false;
 
         if (tinycolor(item).isValid()) {
           data.color = item;
           lineHasValidColor = true;
-        }
-        else if (item.length) {
+        } else if (item.length) {
           data.name = item;
         }
       });
 
       if (Object.keys(data).length && lineHasValidColor) {
-        outputArray.push(data)
+        outputArray.push(data);
       }
     });
 
@@ -41,8 +41,8 @@
   /**
    * Builds and sets the querystring, thereby saving the grid to the URL.
    *
-   * @param {Array} xAxisData - Array of objects containing valid colors and optional names
-   * @param {Array} yAxisData - Array of objects containing valid colors and optional names
+   * @param {Array} xAxisData - Array of objects containing valid colors and optional names.
+   * @param {Array} yAxisData - Array of objects containing valid colors and optional names.
    */
   function setQueryParams(xAxisData, yAxisData) {
     if (xAxisData?.length) {
@@ -62,9 +62,10 @@
   }
 
   /**
-   * Reads in the current queryString and returns arrays of colors.
+   * Reads in the current queryString and returns an object containing an array
+   * for each axis containing [optional] name and color.
    *
-   * @returns {Object} - Object containing xAxisColors and yAxisColors arrays.
+   * @returns {Object} - Object containing xAxisData and yAxisData arrays.
    */
   function getDataFromQueryParams() {
     const urlParams = new URLSearchParams(location.search);
@@ -74,17 +75,6 @@
     queryParams.forEach(axis => {
       const paramsArray = JSON.parse(decodeURIComponent(urlParams.get(axis)));
       colorsObject[axis] = paramsArray;
-      // colorsObject[axis] = paramsArray?.filter(data => {
-
-      //   return true;
-      //   // let lineHasValidColor = false;
-      //   // data.forEach(item => {
-      //   //   if (tinycolor(item).isValid()) {
-      //   //     lineHasValidColor = true;
-      //   //   }
-      //   // })
-      //   // return lineHasValidColor;
-      // });
     });
 
     return colorsObject;
@@ -93,7 +83,7 @@
   /**
    * Create the first row header (containing the x-axis color values).
    *
-   * @param {Array} xAxisData - Array of valid color values
+   * @param {Array} xAxisData - Array of objects containing valid colors and optional names.
    * @returns {String} - String containing HTML
    */
   function buildHeaderRow(xAxisData) {
@@ -127,7 +117,7 @@
   /**
    * Build all <td> cells in a single row.
    *
-   * @param {Array} xAxisData - Array of valid color values
+   * @param {Array} xAxisData - Array of objects containing valid colors and optional names.
    * @param {String} compareColor - String containing a single valid color
    * @returns {String} - String containing HTML
    */
@@ -148,8 +138,8 @@
   /**
    * Build all <tr> rows (one for each color on the Y axis).
    *
-   * @param {Array} xAxisData - Array of valid color values
-   * @param {Array} yAxisData - Array of valid color values
+   * @param {Array} xAxisData - Array of objects containing valid colors and optional names.
+   * @param {Array} yAxisData - Array of objects containing valid colors and optional names.
    * @returns {String} - String containing HTML
    */
   function buildDataRows(xAxisData, yAxisData) {
@@ -179,8 +169,8 @@
   /**
    * Build the markup for the <table> element.
    *
-   * @param {Array} xAxisData - Array of valid color values
-   * @param {Array} yAxisData - Array of valid color values
+   * @param {Array} xAxisData - Array of objects containing valid colors and optional names.
+   * @param {Array} yAxisData - Array of objects containing valid colors and optional names.
    * @returns {String} - String containing HTML
    */
   function buildTable(xAxisData, yAxisData) {
@@ -196,16 +186,16 @@
    * Loads existing colors into form inputs.
    *
    * @param {Element} form - The form element to load querystring colors into.
-   * @param {Array} xAxisData - Array of valid color values
-   * @param {Array} yAxisData - Array of valid color values
+   * @param {Array} xAxisData - Array of objects containing valid colors and optional names.
+   * @param {Array} yAxisData - Array of objects containing valid colors and optional names.
    */
   function hydrateForm(form, xAxisData, yAxisData) {
-    const xInput = form.querySelector('.color-input-1');
-    const yInput = form.querySelector('.color-input-2');
+    const xInput = form.querySelector('.color-input-x');
+    const yInput = form.querySelector('.color-input-y');
 
     if (Array.isArray(xAxisData)) {
       xInput.value = xAxisData.map(data => {
-        return `${data.name}: ${data.color}`
+        return `${('name' in data) ? data.name + ': ': ''} ${data.color}`
       }).join('\n');
     }
 
@@ -214,7 +204,7 @@
     // If y-axis colors are exactly the same as the x-axis, don't populate the textarea.
     if (JSON.stringify(xAxisData) !== JSON.stringify(yAxisData)) {
       yInput.value = yAxisData.map(data => {
-        return `${data.name}: ${data.color}`
+        return `${('name' in data) ? data.name + ': ' : ''} ${data.color}`
       }).join('\n');
     }
   }
@@ -222,8 +212,8 @@
   /**
    * Writes the <table> element HTML to the DOM and updates the query string.
    *
-   * @param {Array} xAxisData - Array of valid color values
-   * @param {Array} yAxisData - Array of valid color values
+   * @param {Array} xAxisData - Array of objects containing valid colors and optional names.
+   * @param {Array} yAxisData - Array of objects containing valid colors and optional names.
    * @param {Boolean} updateQueryParams - Should the query string be updated to reflect the new colors?
    */
   function writeTableToDOM(xAxisData, yAxisData, updateQueryParams = true) {
@@ -240,8 +230,8 @@
    * @param {Event} e - The submit event object
    */
   function handleSubmit(e) {
-    const xInput = e.target.querySelector('.color-input-1');
-    const yInput = e.target.querySelector('.color-input-2');
+    const xInput = e.target.querySelector('.color-input-x');
+    const yInput = e.target.querySelector('.color-input-y');
     const xAxisData = getInputData(xInput.value);
     const yAxisData = yInput.value.trim().length ? getInputData(yInput.value) : getInputData(xInput.value);
     e.preventDefault(); // Don't reload the page.
