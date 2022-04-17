@@ -15,7 +15,7 @@
 
       lineArray.forEach((item, index) => {
         if (index >= 2) return;
-        item = item.replaceAll(';', '').trim(); // Strip any semicolons and trim
+        item = item.replaceAll(/;(.*)/g, '').trim(); // Remove semicolon and anything after it, and trim.
 
         if (tinycolor(item).isValid()) {
           data.color = item;
@@ -142,6 +142,9 @@
             --color: ${ tinycolor(data.color).toHexString()};
             --text-color: ${ tinycolor.mostReadable(data.color, ["#fff", "#000"]).toHexString() };
           ">
+            <div style="color: white; background: hotpink;">
+              ${data.name}
+            </div>
             ${ data.color }
           </th>
           ${ buildTableTds(xAxisData, data.color) }

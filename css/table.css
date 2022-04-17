@@ -37,7 +37,7 @@ td {
 }
 
 tr:first-child th span {
-  writing-mode: vertical-lr;
+  writing-mode: vertical-rl;
   transform: rotate(180deg);
   white-space: nowrap;
 }
