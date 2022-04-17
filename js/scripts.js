@@ -3,12 +3,34 @@
    * Takes a string and returns an array of valid colors.
    *
    * @param {String} string - String containing colors delimited by line breaks
-   * @returns {Array} - Array of valid colors
+   * @returns {Array} - Array of containing object with color and names
    */
-  function getInputColors(string) {
+  function getInputData(string) {
     const inputArray = string.split('\n');
+    const outputArray = [];
 
-    return inputArray.filter(color => tinycolor(color).isValid());
+    inputArray.forEach(line => {
+      const lineArray = line.split(':'); // split lines by comma or colon
+      const data = {};
+
+      lineArray.forEach((item, index) => {
+        if (index >= 2) return;
+        item = item.replaceAll(';', '').trim(); // Strip any semicolons and trim
+
+        if (tinycolor(item).isValid()) {
+          data.color = item;
+        }
+        else if (item.length) {
+          data.name = item;
+        }
+      });
+
+      if (Object.keys(data).length) {
+        outputArray.push(data)
+      }
+    });
+
+    return outputArray;
   }
 
   /**
@@ -55,18 +77,21 @@
   /**
    * Create the first row header (containing the x-axis color values).
    *
-   * @param {Array} xAxisColors - Array of valid color values
+   * @param {Array} xAxisData - Array of valid color values
    * @returns {String} - String containing HTML
    */
-  function buildHeaderRow(xAxisColors) {
-    const headerCells = xAxisColors.map(color => {
+  function buildHeaderRow(xAxisData) {
+    const headerCells = xAxisData.map(data => {
       return `
         <th scope="col" style="
-            --color: ${tinycolor(color).toHexString()};
-            --text-color: ${tinycolor.mostReadable(color, ["#fff", "#000"]).toHexString()};
+            --color: ${tinycolor(data.color).toHexString()};
+            --text-color: ${tinycolor.mostReadable(data.color, ["#fff", "#000"]).toHexString()};
         ">
           <span>
-            ${color}
+            <div style="color: white; background: hotpink;">
+              ${data.name}
+            </div>
+            ${data.color}
           </span>
         </th>
       `;
@@ -83,19 +108,19 @@
   /**
    * Build all <td> cells in a single row.
    *
-   * @param {Array} xAxisColors - Array of valid color values
+   * @param {Array} xAxisData - Array of valid color values
    * @param {String} compareColor - String containing a single valid color
    * @returns {String} - String containing HTML
    */
-  function buildTableTds(xAxisColors, compareColor) {
-    return xAxisColors.map(color => {
+  function buildTableTds(xAxisData, compareColor) {
+    return xAxisData.map(data => {
       return `
         <td style="
-          --color-1: ${ tinycolor(color).toHexString() };
+          --color-1: ${ tinycolor(data.color).toHexString() };
           --color-2: ${ tinycolor(compareColor).toHexString() };
-          --hover-text-color: ${ tinycolor.mostReadable(color, ["#fff", "#000"]).toHexString() };
+          --hover-text-color: ${ tinycolor.mostReadable(data.color, ["#fff", "#000"]).toHexString() };
         ">
-          ${ tinycolor.readability(color, compareColor).toFixed(2) }
+          ${ tinycolor.readability(data.color, compareColor).toFixed(2) }
         </td>
       `;
     }).join('');
@@ -104,22 +129,22 @@
   /**
    * Build all <tr> rows (one for each color on the Y axis).
    *
-   * @param {Array} xAxisColors - Array of valid color values
-   * @param {Array} yAxisColors - Array of valid color values
+   * @param {Array} xAxisData - Array of valid color values
+   * @param {Array} yAxisData - Array of valid color values
    * @returns {String} - String containing HTML
    */
-  function buildDataRows(xAxisColors, yAxisColors) {
+  function buildDataRows(xAxisData, yAxisData) {
 
-    return yAxisColors.map(color => {
+    return yAxisData.map(data => {
       return `
         <tr>
           <th scope="row" style="
-            --color: ${ tinycolor(color).toHexString()};
-            --text-color: ${ tinycolor.mostReadable(color, ["#fff", "#000"]).toHexString() };
+            --color: ${ tinycolor(data.color).toHexString()};
+            --text-color: ${ tinycolor.mostReadable(data.color, ["#fff", "#000"]).toHexString() };
           ">
-            ${ color }
+            ${ data.color }
           </th>
-          ${ buildTableTds(xAxisColors, color) }
+          ${ buildTableTds(xAxisData, data.color) }
         </tr>
       `;
     }).join('');
@@ -128,15 +153,15 @@
   /**
    * Build the markup for the <table> element.
    *
-   * @param {Array} xAxisColors - Array of valid color values
-   * @param {Array} yAxisColors - Array of valid color values
+   * @param {Array} xAxisData - Array of valid color values
+   * @param {Array} yAxisData - Array of valid color values
    * @returns {String} - String containing HTML
    */
-  function buildTable(xAxisColors, yAxisColors) {
+  function buildTable(xAxisData, yAxisData) {
     return `
       <table>
-        ${ buildHeaderRow(xAxisColors) }
-        ${ buildDataRows(xAxisColors, yAxisColors) }
+        ${ buildHeaderRow(xAxisData) }
+        ${ buildDataRows(xAxisData, yAxisData) }
       </table>
     `;
   }
@@ -163,16 +188,16 @@
   /**
    * Writes the <table> element HTML to the DOM and updates the query string.
    *
-   * @param {Array} xAxisColors - Array of valid color values
-   * @param {Array} yAxisColors - Array of valid color values
+   * @param {Array} xAxisData - Array of valid color values
+   * @param {Array} yAxisData - Array of valid color values
    * @param {Boolean} updateQueryParams - Should the query string be updated to reflect the new colors?
    */
-  function writeTableToDOM(xAxisColors, yAxisColors, updateQueryParams = true) {
-    if (xAxisColors?.length) {
-      document.querySelector('.table-container').innerHTML = buildTable(xAxisColors, yAxisColors);
+  function writeTableToDOM(xAxisData, yAxisData, updateQueryParams = true) {
+    if (xAxisData?.length) {
+      document.querySelector('.table-container').innerHTML = buildTable(xAxisData, yAxisData);
     }
 
-    if (updateQueryParams) setQueryParams(xAxisColors, yAxisColors);
+    // if (updateQueryParams) setQueryParams(xAxisData, yAxisData);
   }
 
   /**
@@ -181,13 +206,13 @@
    * @param {Event} e - The submit event object
    */
   function handleSubmit(e) {
-    const colorXInput = e.target.querySelector('.color-input-1');
-    const colorYInput = e.target.querySelector('.color-input-2');
-    const xAxisColors = getInputColors(colorXInput.value);
-    const yAxisColors = colorYInput.value.trim().length ? getInputColors(colorYInput.value) : getInputColors(colorXInput.value);
+    const xInput = e.target.querySelector('.color-input-1');
+    const yInput = e.target.querySelector('.color-input-2');
+    const xAxisData = getInputData(xInput.value);
+    const yAxisData = yInput.value.trim().length ? getInputData(yInput.value) : getInputData(xInput.value);
     e.preventDefault(); // Don't reload the page.
 
-    writeTableToDOM(xAxisColors, yAxisColors);
+    writeTableToDOM(xAxisData, yAxisData);
   }
 
   /**
@@ -213,15 +238,15 @@
    * Handle the popstate event, which occurs when the page is navigated to using
    * the browsers' "back", and "forward" buttons.
    */
-  function handlePopstate() {
-    const form = document.querySelector('.color-input-form');
-    const colorsFromParams = getColorsFromQueryParams();
-    const xAxisColors = colorsFromParams.xAxisColors;
-    const yAxisColors = colorsFromParams.yAxisColors ? colorsFromParams.yAxisColors : xAxisColors;
+  // function handlePopstate() {
+  //   const form = document.querySelector('.color-input-form');
+  //   const colorsFromParams = getColorsFromQueryParams();
+  //   const xAxisColors = colorsFromParams.xAxisColors;
+  //   const yAxisColors = colorsFromParams.yAxisColors ? colorsFromParams.yAxisColors : xAxisColors;
 
-    hydrateForm(form, xAxisColors, yAxisColors);
-    writeTableToDOM(xAxisColors, yAxisColors, false);
-  }
+  //   hydrateForm(form, xAxisColors, yAxisColors);
+  //   writeTableToDOM(xAxisColors, yAxisColors, false);
+  // }
 
   /**
    * Initialize everything.
@@ -229,16 +254,16 @@
   function init() {
     const form = document.querySelector('.color-input-form');
     const tableContainer = document.querySelector('.table-container');
-    const colorsFromParams = getColorsFromQueryParams();
-    const xAxisColors = colorsFromParams.xAxisColors;
-    const yAxisColors = colorsFromParams.yAxisColors ? colorsFromParams.yAxisColors : xAxisColors;
+    // const colorsFromParams = getColorsFromQueryParams();
+    // const xAxisColors = colorsFromParams.xAxisColors;
+    // const yAxisColors = colorsFromParams.yAxisColors ? colorsFromParams.yAxisColors : xAxisColors;
 
-    window.addEventListener('popstate', handlePopstate);
+    // window.addEventListener('popstate', handlePopstate);
     form.addEventListener('submit', handleSubmit);
     tableContainer.addEventListener('mouseover', handleTableMouseover);
 
-    hydrateForm(form, xAxisColors, yAxisColors);
-    writeTableToDOM(xAxisColors, yAxisColors);
+    // hydrateForm(form, xAxisColors, yAxisColors);
+    // writeTableToDOM(xAxisColors, yAxisColors);
   }
 
   // Lets do this!
