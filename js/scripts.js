@@ -3,7 +3,9 @@
    * Takes a string and returns an array of valid colors.
    *
    * @param {String} string - String containing colors delimited by line breaks
-   * @returns {Array} - Array of containing object with color and names
+   * @returns {Array} - Array containing objects of colors and otional name strings.
+   *  - {String} color - valid color
+   *  - {String} [name] - optional name for the color
    */
   function getInputData(string) {
     const inputArray = string.split('\n');
@@ -12,20 +14,23 @@
     inputArray.forEach(line => {
       const lineArray = line.split(':'); // split lines by comma or colon
       const data = {};
+      let lineHasValidColor = false;
 
       lineArray.forEach((item, index) => {
         if (index >= 2) return;
         item = item.replaceAll(/;(.*)/g, '').trim(); // Remove semicolon and anything after it, and trim.
+        lineHasValidColor = false;
 
         if (tinycolor(item).isValid()) {
           data.color = item;
+          lineHasValidColor = true;
         }
         else if (item.length) {
           data.name = item;
         }
       });
 
-      if (Object.keys(data).length) {
+      if (Object.keys(data).length && lineHasValidColor) {
         outputArray.push(data)
       }
     });
@@ -36,20 +41,20 @@
   /**
    * Builds and sets the querystring, thereby saving the grid to the URL.
    *
-   * @param {Array} xAxisColors - Array of valid color values
-   * @param {Array} yAxisColors - Array of valid color values
+   * @param {Array} xAxisData - Array of objects containing valid colors and optional names
+   * @param {Array} yAxisData - Array of objects containing valid colors and optional names
    */
-  function setQueryParams(xAxisColors, yAxisColors) {
-    if (xAxisColors?.length) {
+  function setQueryParams(xAxisData, yAxisData) {
+    if (xAxisData?.length) {
       const urlParams = new URLSearchParams(location.search);
 
-      urlParams.set('xAxisColors', xAxisColors.join('|'));
+      urlParams.set('xAxisData', encodeURIComponent(JSON.stringify(xAxisData)));
 
-      // If the X axis colors are different than the y axis colors, create a parameter, otherwise remove it.
-      if (JSON.stringify(xAxisColors) !== JSON.stringify(yAxisColors)) {
-        urlParams.set('yAxisColors', yAxisColors.join('|'));
+      // If the X axis data are different than the y axis data, create a parameter, otherwise remove it.
+      if (JSON.stringify(xAxisData) !== JSON.stringify(yAxisData)) {
+        urlParams.set('yAxisData', encodeURIComponent(JSON.stringify(yAxisData)));
       } else {
-        urlParams.delete('yAxisColors');
+        urlParams.delete('yAxisData');
       }
 
       window.history.pushState({}, '', `${location.pathname}?${urlParams}`);
@@ -61,14 +66,25 @@
    *
    * @returns {Object} - Object containing xAxisColors and yAxisColors arrays.
    */
-  function getColorsFromQueryParams() {
+  function getDataFromQueryParams() {
     const urlParams = new URLSearchParams(location.search);
-    const queryParams = ['xAxisColors', 'yAxisColors'];
+    const queryParams = ['xAxisData', 'yAxisData'];
     const colorsObject = {}
 
     queryParams.forEach(axis => {
-      paramsArray = urlParams.get(axis)?.split('|');
-      colorsObject[axis] = paramsArray?.filter(color => tinycolor(color).isValid());
+      const paramsArray = JSON.parse(decodeURIComponent(urlParams.get(axis)));
+      colorsObject[axis] = paramsArray;
+      // colorsObject[axis] = paramsArray?.filter(data => {
+
+      //   return true;
+      //   // let lineHasValidColor = false;
+      //   // data.forEach(item => {
+      //   //   if (tinycolor(item).isValid()) {
+      //   //     lineHasValidColor = true;
+      //   //   }
+      //   // })
+      //   // return lineHasValidColor;
+      // });
     });
 
     return colorsObject;
@@ -88,9 +104,12 @@
             --text-color: ${tinycolor.mostReadable(data.color, ["#fff", "#000"]).toHexString()};
         ">
           <span>
-            <div style="color: white; background: hotpink;">
-              ${data.name}
-            </div>
+            ${('name' in data) ? `
+              <div class="color-name">
+                ${data.name}
+              </div>
+              ` : ''
+            }
             ${data.color}
           </span>
         </th>
@@ -142,9 +161,13 @@
             --color: ${ tinycolor(data.color).toHexString()};
             --text-color: ${ tinycolor.mostReadable(data.color, ["#fff", "#000"]).toHexString() };
           ">
-            <div style="color: white; background: hotpink;">
-              ${data.name}
-            </div>
+            ${('name' in data) ? `
+              <div class="color-name">
+                ${data.name}
+              </div>
+              ` : ''
+            }
+
             ${ data.color }
           </th>
           ${ buildTableTds(xAxisData, data.color) }
@@ -173,18 +196,26 @@
    * Loads existing colors into form inputs.
    *
    * @param {Element} form - The form element to load querystring colors into.
-   * @param {Array} xAxisColors - Array of valid color values
-   * @param {Array} yAxisColors - Array of valid color values
+   * @param {Array} xAxisData - Array of valid color values
+   * @param {Array} yAxisData - Array of valid color values
    */
-  function hydrateForm(form, xAxisColors, yAxisColors) {
-    const colorXInput = form.querySelector('.color-input-1');
-    const colorYInput = form.querySelector('.color-input-2');
+  function hydrateForm(form, xAxisData, yAxisData) {
+    const xInput = form.querySelector('.color-input-1');
+    const yInput = form.querySelector('.color-input-2');
 
-    colorXInput.value = Array.isArray(xAxisColors) ? xAxisColors.join('\n') : '';
+    if (Array.isArray(xAxisData)) {
+      xInput.value = xAxisData.map(data => {
+        return `${data.name}: ${data.color}`
+      }).join('\n');
+    }
+
+    // xInput.value = Array.isArray(xAxisData) ? xAxisData.join('\n') : '';
 
     // If y-axis colors are exactly the same as the x-axis, don't populate the textarea.
-    if (JSON.stringify(xAxisColors) !== JSON.stringify(yAxisColors)) {
-      colorYInput.value = Array.isArray(yAxisColors) ? yAxisColors.join('\n') : '';
+    if (JSON.stringify(xAxisData) !== JSON.stringify(yAxisData)) {
+      yInput.value = yAxisData.map(data => {
+        return `${data.name}: ${data.color}`
+      }).join('\n');
     }
   }
 
@@ -200,7 +231,7 @@
       document.querySelector('.table-container').innerHTML = buildTable(xAxisData, yAxisData);
     }
 
-    // if (updateQueryParams) setQueryParams(xAxisData, yAxisData);
+    if (updateQueryParams) setQueryParams(xAxisData, yAxisData);
   }
 
   /**
@@ -241,15 +272,15 @@
    * Handle the popstate event, which occurs when the page is navigated to using
    * the browsers' "back", and "forward" buttons.
    */
-  // function handlePopstate() {
-  //   const form = document.querySelector('.color-input-form');
-  //   const colorsFromParams = getColorsFromQueryParams();
-  //   const xAxisColors = colorsFromParams.xAxisColors;
-  //   const yAxisColors = colorsFromParams.yAxisColors ? colorsFromParams.yAxisColors : xAxisColors;
+  function handlePopstate() {
+    const form = document.querySelector('.color-input-form');
+    const dataFromParams = getDataFromQueryParams();
+    const xAxisData = dataFromParams.xAxisData;
+    const yAxisData = dataFromParams.yAxisData ? dataFromParams.yAxisData : xAxisData;
 
-  //   hydrateForm(form, xAxisColors, yAxisColors);
-  //   writeTableToDOM(xAxisColors, yAxisColors, false);
-  // }
+    hydrateForm(form, xAxisData, yAxisData);
+    writeTableToDOM(xAxisData, yAxisData, false);
+  }
 
   /**
    * Initialize everything.
@@ -257,16 +288,16 @@
   function init() {
     const form = document.querySelector('.color-input-form');
     const tableContainer = document.querySelector('.table-container');
-    // const colorsFromParams = getColorsFromQueryParams();
-    // const xAxisColors = colorsFromParams.xAxisColors;
-    // const yAxisColors = colorsFromParams.yAxisColors ? colorsFromParams.yAxisColors : xAxisColors;
+    const dataFromParams = getDataFromQueryParams();
+    const xAxisData = dataFromParams.xAxisData;
+    const yAxisData = dataFromParams.yAxisData ? dataFromParams.yAxisData : xAxisData;
 
-    // window.addEventListener('popstate', handlePopstate);
+    window.addEventListener('popstate', handlePopstate);
     form.addEventListener('submit', handleSubmit);
     tableContainer.addEventListener('mouseover', handleTableMouseover);
 
-    // hydrateForm(form, xAxisColors, yAxisColors);
-    // writeTableToDOM(xAxisColors, yAxisColors);
+    hydrateForm(form, xAxisData, yAxisData);
+    writeTableToDOM(xAxisData, yAxisData);
   }
 
   // Lets do this!
