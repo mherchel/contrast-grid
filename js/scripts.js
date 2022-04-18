@@ -292,7 +292,7 @@
     const yAxisData = dataFromParams.yAxisData ? dataFromParams.yAxisData : xAxisData;
 
     hydrateForm(form, xAxisData, yAxisData);
-    writeTableToDOM(xAxisData, yAxisData, true);
+    writeTableToDOM(xAxisData, yAxisData, false); // Do not update the query params when writing data to DOM.
   }
 
   /**
