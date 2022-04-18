@@ -56,14 +56,16 @@
           <li>Support for Hex, RGB, HSL, HSLA, etc</li>
           <li>Support color names (and having the name output within the table). Separate the name from the color with a colon (<code>:</code>).</li>
           <li><p>Easy copy/pasting of CSS with variable names (even with comments afterwards). The following code will parse perfectly:</p>
-<pre>
+<div class="overflow">
+            <pre>
 <code>--teen-party--primary: #cc208e; /* accessibile on white, not on dark */
 --teen-party--secondary: #6713d2; /* accessibile on white, not on dark */
 --cotton-candy--primary: #00dbde; /* not accessibile on white. Accessible on dark */
 --cotton-candy--secondary: #fc00ff; /* not accessibile on white. 3.19:1 on dark */
-</code></pre></li>
+</code></pre></div></li>
           <li>Easy copying and pasting from Sass maps into the form. The following will work perfectly (the invalid lines will be discarded):
-<pre>
+<div class="overflow">
+            <pre>
 <code>$palette: (
   blue-40: #185d87,
   blue-45: #0068a8,
@@ -73,7 +75,7 @@
   blue-70: #89d2ff,
   blue-90: #cdebf9,
 );
-</code></pre> </li>
+</code></pre></div> </li>
           <li>Sticky table headings and hover "crosshairs" make it easy to see which colors you're looking at when there is a very large table of colors.</li>
           <li>Super nifty "flip axis data" button (↑↓) that will flip the values in the X and Y coordinates.</li>
           <li>Saves the color grid to the URL, so you can share with your coworkers.</li>

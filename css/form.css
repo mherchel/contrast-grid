@@ -4,33 +4,48 @@ form {
   left: var(--default-container-padding);
   max-width: 100vw;
   flex-shrink: 0;
+  flex-direction: row;
   display: flex;
   flex-wrap: wrap;
   gap: var(--gap);
   align-items: flex-end;
 }
 
+form > label {
+  flex-basis: 100%;
+}
+
 @media (min-width: 1000px) {
   form {
+    flex-direction: row;
     position: static;
     flex-direction: column;
     align-items: stretch;
     width: min-content;
     min-width: var(--sidebar-width);
   }
+
+
+  form > label {
+    flex-basis: auto;
+  }
 }
+
 
 textarea {
   display: block;
   margin-top: 4px; /* Room for focus-ring. */
   border: solid 2px #666;
   width: 100%;
+  min-width: 300px;
   padding: 10px;
   min-height: 200px;
   line-height: 1.5;
 }
 
+
 .button-reverse {
+  flex-basis: 100%;
   margin: 0 auto;
   padding: 3px 10px;
   border: solid 1px transparent;
@@ -38,6 +53,12 @@ textarea {
   background: transparent;
   width: fit-content;
   cursor: pointer;
+}
+
+@media (min-width: 1000px) {
+  .button-reverse {
+    flex-basis: auto;
+  }
 }
 
 .button-reverse:hover {
@@ -72,4 +93,9 @@ textarea:focus,
 
 .button-submit:active {
   background: var(--color-primary);
+}
+
+.overflow {
+  max-width: 80vw;
+  overflow: auto;
 }
