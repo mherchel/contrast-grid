@@ -225,6 +225,29 @@
   }
 
   /**
+   * Reverses the data in the X and Y text inputs, and then rebuilds the table.
+   */
+  function reverseInputData() {
+    const form = document.querySelector('.color-input-form');
+    const xInput = form.querySelector('.color-input-x');
+    const yInput = form.querySelector('.color-input-y');
+    const xAxisText = xInput.value;
+    const yAxisText = yInput.value;
+
+    if (!yInput.value.trim().length) return; // Don't do 💩 if Y axis is not populated.
+
+    // Flip the data in the text fields.
+    xInput.value = yAxisText;
+    yInput.value = xAxisText;
+
+    // Get the new data from the inputs and then rebuild the table.
+    const xAxisData = getInputData(xInput.value);
+    const yAxisData = getInputData(yInput.value);
+
+    writeTableToDOM(xAxisData, yAxisData);
+  }
+
+  /**
    * Handles the form submission.
    *
    * @param {Event} e - The submit event object
@@ -269,7 +292,7 @@
     const yAxisData = dataFromParams.yAxisData ? dataFromParams.yAxisData : xAxisData;
 
     hydrateForm(form, xAxisData, yAxisData);
-    writeTableToDOM(xAxisData, yAxisData, false);
+    writeTableToDOM(xAxisData, yAxisData, true);
   }
 
   /**
@@ -277,6 +300,7 @@
    */
   function init() {
     const form = document.querySelector('.color-input-form');
+    const reverseDataButton = document.querySelector('.button-reverse');
     const tableContainer = document.querySelector('.table-container');
     const dataFromParams = getDataFromQueryParams();
     const xAxisData = dataFromParams.xAxisData;
@@ -284,6 +308,7 @@
 
     window.addEventListener('popstate', handlePopstate);
     form.addEventListener('submit', handleSubmit);
+    reverseDataButton.addEventListener('click', reverseInputData);
     tableContainer.addEventListener('mouseover', handleTableMouseover);
 
     hydrateForm(form, xAxisData, yAxisData);

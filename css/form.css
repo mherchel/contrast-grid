@@ -30,7 +30,25 @@ textarea {
   line-height: 1.5;
 }
 
-button {
+.button-reverse {
+  margin: 0 auto;
+  padding: 3px 10px;
+  border: solid 1px transparent;
+  border-radius: 5px;
+  background: transparent;
+  width: fit-content;
+  cursor: pointer;
+}
+
+.button-reverse:hover {
+  background-color: #f5f5f5;
+}
+
+.button-reverse:active {
+  background-color: #ddd;
+}
+
+.button-submit {
   border: solid 1px transparent;
   background: var(--color-primary);
   appearance: none;
@@ -43,15 +61,15 @@ button {
 }
 
 textarea:focus,
-button:focus {
+.button-submit:focus {
   outline: solid 4px var(--color-primary);
   outline-offset: 2px;
 }
 
-button:hover {
+.button-submit:hover {
   background-color: var(--color-primary-light);
 }
 
-button:active {
+.button-submit:active {
   background: var(--color-primary);
 }
