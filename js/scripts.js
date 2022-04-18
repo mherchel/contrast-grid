@@ -1,33 +1,60 @@
 ((tinycolor) => {
   /**
-   * Takes a string and returns an array of valid colors.
+   * Takes a string and returns an array of objects containing names, colors.
    *
    * @param {String} string - String containing colors delimited by line breaks
-   * @returns {Array} - Array of valid colors
+   * @returns {Array} - Array containing objects of colors and optional name strings.
+   *  - {String} color - valid color
+   *  - {String} [name] - optional name for the color
    */
-  function getInputColors(string) {
+  function getInputData(string) {
     const inputArray = string.split('\n');
+    const outputArray = [];
 
-    return inputArray.filter(color => tinycolor(color).isValid());
+    inputArray.forEach(line => {
+      const lineArray = line.split(':');
+      const data = {};
+      let lineHasValidColor = false;
+
+      lineArray.forEach((item, index) => {
+        if (index >= 2) return;
+        item = item.replaceAll(/;(.*)/g, '').trim(); // Remove semicolon and anything after it, then trim.
+        item = item.replaceAll(/,$/g, '').trim(); // If a comma is the last character, yank that sucka out (this is useful for Sass maps of colors).
+        lineHasValidColor = false;
+
+        if (tinycolor(item).isValid()) {
+          data.color = item;
+          lineHasValidColor = true;
+        } else if (item.length) {
+          data.name = item;
+        }
+      });
+
+      if (Object.keys(data).length && lineHasValidColor) {
+        outputArray.push(data);
+      }
+    });
+
+    return outputArray;
   }
 
   /**
    * Builds and sets the querystring, thereby saving the grid to the URL.
    *
-   * @param {Array} xAxisColors - Array of valid color values
-   * @param {Array} yAxisColors - Array of valid color values
+   * @param {Array} xAxisData - Array of objects containing valid colors and optional names.
+   * @param {Array} yAxisData - Array of objects containing valid colors and optional names.
    */
-  function setQueryParams(xAxisColors, yAxisColors) {
-    if (xAxisColors?.length) {
+  function setQueryParams(xAxisData, yAxisData) {
+    if (xAxisData?.length) {
       const urlParams = new URLSearchParams(location.search);
 
-      urlParams.set('xAxisColors', xAxisColors.join('|'));
+      urlParams.set('xAxisData', encodeURIComponent(JSON.stringify(xAxisData)));
 
-      // If the X axis colors are different than the y axis colors, create a parameter, otherwise remove it.
-      if (JSON.stringify(xAxisColors) !== JSON.stringify(yAxisColors)) {
-        urlParams.set('yAxisColors', yAxisColors.join('|'));
+      // If the X axis data are different than the y axis data, create a parameter, otherwise remove it.
+      if (JSON.stringify(xAxisData) !== JSON.stringify(yAxisData)) {
+        urlParams.set('yAxisData', encodeURIComponent(JSON.stringify(yAxisData)));
       } else {
-        urlParams.delete('yAxisColors');
+        urlParams.delete('yAxisData');
       }
 
       window.history.pushState({}, '', `${location.pathname}?${urlParams}`);
@@ -35,18 +62,19 @@
   }
 
   /**
-   * Reads in the current queryString and returns arrays of colors.
+   * Reads in the current queryString and returns an object containing an array
+   * for each axis containing [optional] name and color.
    *
-   * @returns {Object} - Object containing xAxisColors and yAxisColors arrays.
+   * @returns {Object} - Object containing xAxisData and yAxisData arrays.
    */
-  function getColorsFromQueryParams() {
+  function getDataFromQueryParams() {
     const urlParams = new URLSearchParams(location.search);
-    const queryParams = ['xAxisColors', 'yAxisColors'];
+    const queryParams = ['xAxisData', 'yAxisData'];
     const colorsObject = {}
 
     queryParams.forEach(axis => {
-      paramsArray = urlParams.get(axis)?.split('|');
-      colorsObject[axis] = paramsArray?.filter(color => tinycolor(color).isValid());
+      const paramsArray = JSON.parse(decodeURIComponent(urlParams.get(axis)));
+      colorsObject[axis] = paramsArray;
     });
 
     return colorsObject;
@@ -55,18 +83,24 @@
   /**
    * Create the first row header (containing the x-axis color values).
    *
-   * @param {Array} xAxisColors - Array of valid color values
+   * @param {Array} xAxisData - Array of objects containing valid colors and optional names.
    * @returns {String} - String containing HTML
    */
-  function buildHeaderRow(xAxisColors) {
-    const headerCells = xAxisColors.map(color => {
+  function buildHeaderRow(xAxisData) {
+    const headerCells = xAxisData.map(data => {
       return `
         <th scope="col" style="
-            --color: ${tinycolor(color).toHexString()};
-            --text-color: ${tinycolor.mostReadable(color, ["#fff", "#000"]).toHexString()};
+            --color: ${tinycolor(data.color).toHexString()};
+            --text-color: ${tinycolor.mostReadable(data.color, ["#fff", "#000"]).toHexString()};
         ">
           <span>
-            ${color}
+            ${('name' in data) ? `
+              <div class="color-name">
+                ${data.name}
+              </div>
+              ` : ''
+            }
+            ${data.color}
           </span>
         </th>
       `;
@@ -83,19 +117,19 @@
   /**
    * Build all <td> cells in a single row.
    *
-   * @param {Array} xAxisColors - Array of valid color values
+   * @param {Array} xAxisData - Array of objects containing valid colors and optional names.
    * @param {String} compareColor - String containing a single valid color
    * @returns {String} - String containing HTML
    */
-  function buildTableTds(xAxisColors, compareColor) {
-    return xAxisColors.map(color => {
+  function buildTableTds(xAxisData, compareColor) {
+    return xAxisData.map(data => {
       return `
         <td style="
-          --color-1: ${ tinycolor(color).toHexString() };
+          --color-1: ${ tinycolor(data.color).toHexString() };
           --color-2: ${ tinycolor(compareColor).toHexString() };
-          --hover-text-color: ${ tinycolor.mostReadable(color, ["#fff", "#000"]).toHexString() };
+          --hover-text-color: ${ tinycolor.mostReadable(data.color, ["#fff", "#000"]).toHexString() };
         ">
-          ${ tinycolor.readability(color, compareColor).toFixed(2) }
+          ${ tinycolor.readability(data.color, compareColor).toFixed(2) }
         </td>
       `;
     }).join('');
@@ -104,22 +138,29 @@
   /**
    * Build all <tr> rows (one for each color on the Y axis).
    *
-   * @param {Array} xAxisColors - Array of valid color values
-   * @param {Array} yAxisColors - Array of valid color values
+   * @param {Array} xAxisData - Array of objects containing valid colors and optional names.
+   * @param {Array} yAxisData - Array of objects containing valid colors and optional names.
    * @returns {String} - String containing HTML
    */
-  function buildDataRows(xAxisColors, yAxisColors) {
+  function buildDataRows(xAxisData, yAxisData) {
 
-    return yAxisColors.map(color => {
+    return yAxisData.map(data => {
       return `
         <tr>
           <th scope="row" style="
-            --color: ${ tinycolor(color).toHexString()};
-            --text-color: ${ tinycolor.mostReadable(color, ["#fff", "#000"]).toHexString() };
+            --color: ${ tinycolor(data.color).toHexString()};
+            --text-color: ${ tinycolor.mostReadable(data.color, ["#fff", "#000"]).toHexString() };
           ">
-            ${ color }
+            ${('name' in data) ? `
+              <div class="color-name">
+                ${data.name}
+              </div>
+              ` : ''
+            }
+
+            ${ data.color }
           </th>
-          ${ buildTableTds(xAxisColors, color) }
+          ${ buildTableTds(xAxisData, data.color) }
         </tr>
       `;
     }).join('');
@@ -128,15 +169,15 @@
   /**
    * Build the markup for the <table> element.
    *
-   * @param {Array} xAxisColors - Array of valid color values
-   * @param {Array} yAxisColors - Array of valid color values
+   * @param {Array} xAxisData - Array of objects containing valid colors and optional names.
+   * @param {Array} yAxisData - Array of objects containing valid colors and optional names.
    * @returns {String} - String containing HTML
    */
-  function buildTable(xAxisColors, yAxisColors) {
+  function buildTable(xAxisData, yAxisData) {
     return `
       <table>
-        ${ buildHeaderRow(xAxisColors) }
-        ${ buildDataRows(xAxisColors, yAxisColors) }
+        ${ buildHeaderRow(xAxisData) }
+        ${ buildDataRows(xAxisData, yAxisData) }
       </table>
     `;
   }
@@ -145,34 +186,65 @@
    * Loads existing colors into form inputs.
    *
    * @param {Element} form - The form element to load querystring colors into.
-   * @param {Array} xAxisColors - Array of valid color values
-   * @param {Array} yAxisColors - Array of valid color values
+   * @param {Array} xAxisData - Array of objects containing valid colors and optional names.
+   * @param {Array} yAxisData - Array of objects containing valid colors and optional names.
    */
-  function hydrateForm(form, xAxisColors, yAxisColors) {
-    const colorXInput = form.querySelector('.color-input-1');
-    const colorYInput = form.querySelector('.color-input-2');
+  function hydrateForm(form, xAxisData, yAxisData) {
+    const xInput = form.querySelector('.color-input-x');
+    const yInput = form.querySelector('.color-input-y');
 
-    colorXInput.value = Array.isArray(xAxisColors) ? xAxisColors.join('\n') : '';
+    if (Array.isArray(xAxisData)) {
+      xInput.value = xAxisData.map(data => {
+        return `${('name' in data) ? data.name + ': ': ''} ${data.color}`
+      }).join('\n');
+    }
+
+    // xInput.value = Array.isArray(xAxisData) ? xAxisData.join('\n') : '';
 
     // If y-axis colors are exactly the same as the x-axis, don't populate the textarea.
-    if (JSON.stringify(xAxisColors) !== JSON.stringify(yAxisColors)) {
-      colorYInput.value = Array.isArray(yAxisColors) ? yAxisColors.join('\n') : '';
+    if (JSON.stringify(xAxisData) !== JSON.stringify(yAxisData)) {
+      yInput.value = yAxisData.map(data => {
+        return `${('name' in data) ? data.name + ': ' : ''} ${data.color}`
+      }).join('\n');
     }
   }
 
   /**
    * Writes the <table> element HTML to the DOM and updates the query string.
    *
-   * @param {Array} xAxisColors - Array of valid color values
-   * @param {Array} yAxisColors - Array of valid color values
+   * @param {Array} xAxisData - Array of objects containing valid colors and optional names.
+   * @param {Array} yAxisData - Array of objects containing valid colors and optional names.
    * @param {Boolean} updateQueryParams - Should the query string be updated to reflect the new colors?
    */
-  function writeTableToDOM(xAxisColors, yAxisColors, updateQueryParams = true) {
-    if (xAxisColors?.length) {
-      document.querySelector('.table-container').innerHTML = buildTable(xAxisColors, yAxisColors);
+  function writeTableToDOM(xAxisData, yAxisData, updateQueryParams = true) {
+    if (xAxisData?.length) {
+      document.querySelector('.table-container').innerHTML = buildTable(xAxisData, yAxisData);
     }
 
-    if (updateQueryParams) setQueryParams(xAxisColors, yAxisColors);
+    if (updateQueryParams) setQueryParams(xAxisData, yAxisData);
+  }
+
+  /**
+   * Reverses the data in the X and Y text inputs, and then rebuilds the table.
+   */
+  function reverseInputData() {
+    const form = document.querySelector('.color-input-form');
+    const xInput = form.querySelector('.color-input-x');
+    const yInput = form.querySelector('.color-input-y');
+    const xAxisText = xInput.value;
+    const yAxisText = yInput.value;
+
+    if (!yInput.value.trim().length) return; // Don't do 💩 if Y axis is not populated.
+
+    // Flip the data in the text fields.
+    xInput.value = yAxisText;
+    yInput.value = xAxisText;
+
+    // Get the new data from the inputs and then rebuild the table.
+    const xAxisData = getInputData(xInput.value);
+    const yAxisData = getInputData(yInput.value);
+
+    writeTableToDOM(xAxisData, yAxisData);
   }
 
   /**
@@ -181,13 +253,13 @@
    * @param {Event} e - The submit event object
    */
   function handleSubmit(e) {
-    const colorXInput = e.target.querySelector('.color-input-1');
-    const colorYInput = e.target.querySelector('.color-input-2');
-    const xAxisColors = getInputColors(colorXInput.value);
-    const yAxisColors = colorYInput.value.trim().length ? getInputColors(colorYInput.value) : getInputColors(colorXInput.value);
+    const xInput = e.target.querySelector('.color-input-x');
+    const yInput = e.target.querySelector('.color-input-y');
+    const xAxisData = getInputData(xInput.value);
+    const yAxisData = yInput.value.trim().length ? getInputData(yInput.value) : getInputData(xInput.value);
     e.preventDefault(); // Don't reload the page.
 
-    writeTableToDOM(xAxisColors, yAxisColors);
+    writeTableToDOM(xAxisData, yAxisData);
   }
 
   /**
@@ -215,12 +287,12 @@
    */
   function handlePopstate() {
     const form = document.querySelector('.color-input-form');
-    const colorsFromParams = getColorsFromQueryParams();
-    const xAxisColors = colorsFromParams.xAxisColors;
-    const yAxisColors = colorsFromParams.yAxisColors ? colorsFromParams.yAxisColors : xAxisColors;
+    const dataFromParams = getDataFromQueryParams();
+    const xAxisData = dataFromParams.xAxisData;
+    const yAxisData = dataFromParams.yAxisData ? dataFromParams.yAxisData : xAxisData;
 
-    hydrateForm(form, xAxisColors, yAxisColors);
-    writeTableToDOM(xAxisColors, yAxisColors, false);
+    hydrateForm(form, xAxisData, yAxisData);
+    writeTableToDOM(xAxisData, yAxisData, false); // Do not update the query params when writing data to DOM.
   }
 
   /**
@@ -228,17 +300,19 @@
    */
   function init() {
     const form = document.querySelector('.color-input-form');
+    const reverseDataButton = document.querySelector('.button-reverse');
     const tableContainer = document.querySelector('.table-container');
-    const colorsFromParams = getColorsFromQueryParams();
-    const xAxisColors = colorsFromParams.xAxisColors;
-    const yAxisColors = colorsFromParams.yAxisColors ? colorsFromParams.yAxisColors : xAxisColors;
+    const dataFromParams = getDataFromQueryParams();
+    const xAxisData = dataFromParams.xAxisData;
+    const yAxisData = dataFromParams.yAxisData ? dataFromParams.yAxisData : xAxisData;
 
     window.addEventListener('popstate', handlePopstate);
     form.addEventListener('submit', handleSubmit);
+    reverseDataButton.addEventListener('click', reverseInputData);
     tableContainer.addEventListener('mouseover', handleTableMouseover);
 
-    hydrateForm(form, xAxisColors, yAxisColors);
-    writeTableToDOM(xAxisColors, yAxisColors);
+    hydrateForm(form, xAxisData, yAxisData);
+    writeTableToDOM(xAxisData, yAxisData);
   }
 
   // Lets do this!

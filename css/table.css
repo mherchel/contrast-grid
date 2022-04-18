@@ -37,7 +37,7 @@ td {
 }
 
 tr:first-child th span {
-  writing-mode: vertical-lr;
+  writing-mode: vertical-rl;
   transform: rotate(180deg);
   white-space: nowrap;
 }
@@ -97,4 +97,8 @@ tr :is(th, td):after {
 :is(th, td).is-highlighted:before,
 tr:hover :is(th, td):after {
   opacity: 1;
+}
+
+.color-name {
+  font-size: 16px;
 }
