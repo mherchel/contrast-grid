@@ -94,3 +94,12 @@ footer a {
     display: none;
   }
 }
+
+code {
+  font-size: 12px;
+}
+
+
+li p:first-child {
+  margin-top: 0;
+}

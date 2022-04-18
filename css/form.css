@@ -15,7 +15,7 @@ form {
     position: static;
     flex-direction: column;
     align-items: stretch;
-    width: fit-content;
+    width: min-content;
     min-width: var(--sidebar-width);
   }
 }
