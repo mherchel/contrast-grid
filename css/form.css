@@ -83,10 +83,11 @@ textarea {
   border-radius: 2px;
 }
 
-textarea:focus,
-.button-submit:focus,
-#contrast:focus, 
-.datalist-buttons > button[data-value]:focus {
+.color-input-form input {
+  accent-color: var(--color-primary);
+}
+
+.color-input-form :focus {
   outline: solid 4px var(--color-primary);
   outline-offset: 2px;
 }
@@ -107,7 +108,6 @@ textarea:focus,
 }
 
 #contrast {
-  accent-color: var(--color-primary);
 	width: 100%;
 }
 
@@ -146,4 +146,17 @@ textarea:focus,
 
 .datalist-buttons > button[data-value="21"] {
   right: 0;
+}
+
+.checkbox-flex {
+  display: flex;
+  line-height: 1;
+  gap: 0.5em;
+}
+
+.checkbox-flex input[type="checkbox"] {
+  font-size: 1em;
+  min-height: 1em;
+  min-width: 1em;
+  margin: 0px;
 }
