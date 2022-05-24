@@ -102,3 +102,7 @@ tr:hover :is(th, td):after {
 .color-name {
   font-size: 16px;
 }
+
+.doesNotMeet {
+  visibility: hidden;
+}

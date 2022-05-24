@@ -9,13 +9,14 @@ form {
   flex-wrap: wrap;
   gap: var(--gap);
   align-items: flex-end;
+  max-width: 95vw;
 }
 
 form > label {
   flex-basis: 100%;
 }
 
-@media (min-width: 1000px) {
+@media (min-width: 1200px) {
   form {
     flex-direction: row;
     position: static;
@@ -55,7 +56,7 @@ textarea {
   cursor: pointer;
 }
 
-@media (min-width: 1000px) {
+@media (min-width: 1200px) {
   .button-reverse {
     flex-basis: auto;
   }
@@ -69,7 +70,8 @@ textarea {
   background-color: #ddd;
 }
 
-.button-submit {
+.button-submit,
+.datalist-buttons > button[data-value] {
   border: solid 1px transparent;
   background: var(--color-primary);
   appearance: none;
@@ -82,20 +84,66 @@ textarea {
 }
 
 textarea:focus,
-.button-submit:focus {
+.button-submit:focus,
+#contrast:focus, 
+.datalist-buttons > button[data-value]:focus {
   outline: solid 4px var(--color-primary);
   outline-offset: 2px;
 }
 
-.button-submit:hover {
+.button-submit:hover,
+.datalist-buttons > button[data-value]:hover {
   background-color: var(--color-primary-light);
 }
 
-.button-submit:active {
+.button-submit:active,
+.datalist-buttons > button[data-value]:active {
   background: var(--color-primary);
 }
 
 .overflow {
   max-width: 80vw;
   overflow: auto;
+}
+
+#contrast {
+  accent-color: var(--color-primary);
+	width: 100%;
+}
+
+.datalist-buttons {
+  display: flex;
+  margin-block: 0rem 4rem;
+  position: relative;
+  width: 100%;
+}
+
+.datalist-buttons > button[data-value] {
+  border-radius: 4px;
+  padding: 1px 5px;
+  position: absolute;
+}
+
+.datalist-buttons > button[data-value]:not(:first-child):not(:last-child) {
+  transform: rotate(45deg);
+}
+
+.datalist-buttons > button[data-value="1"] {
+  left: 0;
+}
+
+.datalist-buttons > button[data-value="3"] {
+  left: calc(100% * calc(3 / 20) - 5% - 1rem);;
+}
+
+.datalist-buttons > button[data-value="4.5"] {
+  left: calc(100% * calc(4.5 / 20) - 5% - 1rem);;
+}
+
+.datalist-buttons > button[data-value="7"] {
+  left: calc(100% * calc(7 / 20) - 5% - 1rem);;
+}
+
+.datalist-buttons > button[data-value="21"] {
+  right: 0;
 }
