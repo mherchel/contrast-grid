@@ -27,7 +27,7 @@ a:focus {
 header {
   position: sticky;
   left: var(--default-container-padding);
-  max-width: 100ch;
+  max-width: min(100ch, calc(95vw - var(--gap)));
   padding: var(--default-container-padding);
 }
 
@@ -60,6 +60,7 @@ main a {
   padding: 20px;
   background: #f1f4f7;
   font-size: 18px;
+  max-width: calc(95vw - var(--gap));
 }
 
 /* Footer styles. */
