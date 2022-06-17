@@ -129,7 +129,8 @@ textarea {
   position: absolute;
 }
 
-.datalist-buttons > button[data-value]:not(:first-child):not(:last-child) {
+/* Use :where() to lower specificity */
+.datalist-buttons > button[data-value]:where(:not(:first-child):not(:last-child)) {
   transform: rotate(45deg);
 }
 
@@ -139,6 +140,18 @@ textarea {
 
 .datalist-buttons > button[data-value="3"] {
   left: calc(100% * calc(3 / 20) - 5% - 1rem);;
+}
+
+/* Make room for Large button to be shifted above input */
+@media (max-width: 35rem) {
+  label[for="contrast"] {
+      margin-bottom: 3rem;
+  }
+
+  .datalist-buttons > button[data-value="3"] {
+      left: calc(100% * calc(3 / 20) - 5% - 2rem);
+      transform: translateY(-5.2rem) rotate(45deg);
+  }
 }
 
 .datalist-buttons > button[data-value="4.5"] {
