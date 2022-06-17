@@ -2,20 +2,20 @@
 form {
   position: sticky;
   left: var(--default-container-padding);
-  max-width: 100vw;
   flex-shrink: 0;
   flex-direction: row;
   display: flex;
   flex-wrap: wrap;
   gap: var(--gap);
   align-items: flex-end;
+  max-width: calc(95vw - var(--gap));
 }
 
 form > label {
   flex-basis: 100%;
 }
 
-@media (min-width: 1000px) {
+@media (min-width: 1200px) {
   form {
     flex-direction: row;
     position: static;
@@ -55,7 +55,7 @@ textarea {
   cursor: pointer;
 }
 
-@media (min-width: 1000px) {
+@media (min-width: 1200px) {
   .button-reverse {
     flex-basis: auto;
   }
@@ -69,33 +69,114 @@ textarea {
   background-color: #ddd;
 }
 
-.button-submit {
+.button-submit,
+.datalist-buttons > button[data-value] {
   border: solid 1px transparent;
   background: var(--color-primary);
   appearance: none;
   color: white;
-  padding: 15px 20px;
+  padding-inline: 15px;
   font-weight: bold;
   font-size: 16px;
   cursor: pointer;
   border-radius: 2px;
+  min-height: 24px;
+  min-width: 24px;
 }
 
-textarea:focus,
-.button-submit:focus {
+.button-submit {
+  min-height: 3rem;
+}
+
+.color-input-form input {
+  accent-color: var(--color-primary);
+}
+
+.color-input-form :focus {
   outline: solid 4px var(--color-primary);
   outline-offset: 2px;
 }
 
-.button-submit:hover {
+.button-submit:hover,
+.datalist-buttons > button[data-value]:hover {
   background-color: var(--color-primary-light);
 }
 
-.button-submit:active {
+.button-submit:active,
+.datalist-buttons > button[data-value]:active {
   background: var(--color-primary);
 }
 
 .overflow {
   max-width: 80vw;
   overflow: auto;
+}
+
+#contrast {
+	width: 100%;
+}
+
+.datalist-buttons {
+  display: flex;
+  margin-block: 0rem 4rem;
+  position: relative;
+  width: 100%;
+}
+
+.datalist-buttons > button[data-value] {
+  border-radius: 4px;
+  padding: 1px 5px;
+  position: absolute;
+}
+
+/* Use :where() to lower specificity */
+.datalist-buttons > button[data-value]:where(:not(:first-child):not(:last-child)) {
+  transform: rotate(45deg);
+}
+
+.datalist-buttons > button[data-value="1"] {
+  left: 0;
+}
+
+.datalist-buttons > button[data-value="3"] {
+  left: calc(100% * calc(3 / 20) - 5% - 1rem);;
+}
+
+/* Make room for Large button to be shifted above input */
+@media (max-width: 35rem) {
+  label[for="contrast"] {
+      margin-bottom: 3rem;
+  }
+
+  .datalist-buttons > button[data-value="3"] {
+      left: calc(100% * calc(3 / 20) - 5% - 2rem);
+      transform: translateY(-5.2rem) rotate(45deg);
+  }
+}
+
+.datalist-buttons > button[data-value="4.5"] {
+  left: calc(100% * calc(4.5 / 20) - 5% - 1rem);;
+}
+
+.datalist-buttons > button[data-value="7"] {
+  left: calc(100% * calc(7 / 20) - 5% - 1rem);;
+}
+
+.datalist-buttons > button[data-value="21"] {
+  right: 0;
+}
+
+.checkbox-flex {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  line-height: 1;
+  min-height: 3rem;
+}
+
+.checkbox-flex input[type="checkbox"] {
+  font-size: 1em;
+  min-height: 1em;
+  min-width: 1em;
+  margin: 0px;
 }
