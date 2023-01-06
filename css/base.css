@@ -4,6 +4,26 @@
   --default-container-padding: 10px;
   --sidebar-width: 350px;
   --gap: 20px;
+  --scrollbar-width: 16px;
+}
+
+/* Chrome auto-hides scrollbar, which provides for horrible UX on large palettes. */
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+}
+
+::-webkit-scrollbar:vertical {
+  width: var(--scrollbar-width);
+}
+
+::-webkit-scrollbar:horizontal {
+  height: var(--scrollbar-width);
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  border: 2px solid white;
+  background-color: rgba(0, 0, 0, .5);
 }
 
 *, *:before, *:after {
