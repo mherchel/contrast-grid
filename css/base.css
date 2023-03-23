@@ -2,7 +2,7 @@
   --color-primary: #0f6292;
   --color-primary-light: #0d77b5;
   --default-container-padding: 10px;
-  --sidebar-width: 350px;
+  --sidebar-width: 550px;
   --gap: 20px;
   --scrollbar-width: 16px;
 }
@@ -47,7 +47,7 @@ a:focus {
 header {
   position: sticky;
   left: var(--default-container-padding);
-  max-width: 100ch;
+  max-width: min(100ch, calc(95vw - var(--gap)));
   padding: var(--default-container-padding);
 }
 
@@ -65,7 +65,7 @@ main {
   padding: var(--default-container-padding);
 }
 
-@media (min-width: 1000px) {
+@media (min-width: 1200px) {
   main {
     flex-direction: row;
   }
@@ -80,6 +80,7 @@ main a {
   padding: 20px;
   background: #f1f4f7;
   font-size: 18px;
+  max-width: calc(95vw - var(--gap));
 }
 
 /* Footer styles. */
@@ -90,7 +91,7 @@ footer {
   color: white;
 }
 
-@media (min-width: 1000px) {
+@media (min-width: 1200px) {
   footer {
     padding: 40px var(--default-container-padding) 40px calc(var(--default-container-padding) + var(--sidebar-width) + var(--gap));
   }
@@ -105,7 +106,7 @@ footer a {
   display: none;
 }
 
-@media (min-width: 1000px) {
+@media (min-width: 1200px) {
   .show-large {
     display: revert;
   }
@@ -122,4 +123,14 @@ code {
 
 li p:first-child {
   margin-top: 0;
+}
+
+.visually-hidden:not(:focus):not(:active) {
+  clip: rect(0 0 0 0); 
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap; 
+  width: 1px;
 }

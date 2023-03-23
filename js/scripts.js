@@ -119,17 +119,29 @@
    *
    * @param {Array} xAxisData - Array of objects containing valid colors and optional names.
    * @param {String} compareColor - String containing a single valid color
+   * @param {Number} contrast - Color contrast value set.
+   * @param {Boolean} hideInput - Should colors that don't meet the set contrast be hidden?
    * @returns {String} - String containing HTML
    */
-  function buildTableTds(xAxisData, compareColor) {
+  function buildTableTds(xAxisData, compareColor, contrast, hideInput) {
+    if (!hideInput) {
+      contrast = 0;
+    }
     return xAxisData.map(data => {
+      let tdClass = "";
+      const readability = tinycolor.readability(data.color, compareColor);
+      if (readability < contrast) {
+        tdClass = "doesNotMeet";
+      }
+
+
       return `
-        <td style="
+        <td class="${ tdClass }" style="
           --color-1: ${ tinycolor(data.color).toHexString() };
           --color-2: ${ tinycolor(compareColor).toHexString() };
           --hover-text-color: ${ tinycolor.mostReadable(data.color, ["#fff", "#000"]).toHexString() };
         ">
-          ${ tinycolor.readability(data.color, compareColor).toFixed(2) }
+          ${ readability.toFixed(2) }
         </td>
       `;
     }).join('');
@@ -140,9 +152,11 @@
    *
    * @param {Array} xAxisData - Array of objects containing valid colors and optional names.
    * @param {Array} yAxisData - Array of objects containing valid colors and optional names.
+   * @param {Number} contrast - Color contrast value set.
+   * @param {Boolean} hideInput - Should colors that don't meet the set contrast be hidden?
    * @returns {String} - String containing HTML
    */
-  function buildDataRows(xAxisData, yAxisData) {
+  function buildDataRows(xAxisData, yAxisData, contrast, hideInput) {
 
     return yAxisData.map(data => {
       return `
@@ -160,7 +174,7 @@
 
             ${ data.color }
           </th>
-          ${ buildTableTds(xAxisData, data.color) }
+          ${ buildTableTds(xAxisData, data.color, contrast, hideInput) }
         </tr>
       `;
     }).join('');
@@ -171,13 +185,15 @@
    *
    * @param {Array} xAxisData - Array of objects containing valid colors and optional names.
    * @param {Array} yAxisData - Array of objects containing valid colors and optional names.
+   * @param {Number} contrast - Color contrast value set.
+   * @param {Boolean} hideInput - Should colors that don't meet the set contrast be hidden?
    * @returns {String} - String containing HTML
    */
-  function buildTable(xAxisData, yAxisData) {
+  function buildTable(xAxisData, yAxisData, contrast, hideInput) {
     return `
       <table>
         ${ buildHeaderRow(xAxisData) }
-        ${ buildDataRows(xAxisData, yAxisData) }
+        ${ buildDataRows(xAxisData, yAxisData, contrast, hideInput) }
       </table>
     `;
   }
@@ -214,11 +230,13 @@
    *
    * @param {Array} xAxisData - Array of objects containing valid colors and optional names.
    * @param {Array} yAxisData - Array of objects containing valid colors and optional names.
+   * @param {Number} contrast - Color contrast value set.
+   * @param {Boolean} hideInput - Should colors that don't meet the set contrast be hidden?
    * @param {Boolean} updateQueryParams - Should the query string be updated to reflect the new colors?
    */
-  function writeTableToDOM(xAxisData, yAxisData, updateQueryParams = true) {
+  function writeTableToDOM(xAxisData, yAxisData, contrast, hideInput, updateQueryParams = true) {
     if (xAxisData?.length) {
-      document.querySelector('.table-container').innerHTML = buildTable(xAxisData, yAxisData);
+      document.querySelector('.table-container').innerHTML = buildTable(xAxisData, yAxisData, contrast, hideInput);
     }
 
     if (updateQueryParams) setQueryParams(xAxisData, yAxisData);
@@ -231,6 +249,8 @@
     const form = document.querySelector('.color-input-form');
     const xInput = form.querySelector('.color-input-x');
     const yInput = form.querySelector('.color-input-y');
+    const contrastInput = contrast.value;
+    const hideInput = hideBelow.checked;
     const xAxisText = xInput.value;
     const yAxisText = yInput.value;
 
@@ -244,7 +264,7 @@
     const xAxisData = getInputData(xInput.value);
     const yAxisData = getInputData(yInput.value);
 
-    writeTableToDOM(xAxisData, yAxisData);
+    writeTableToDOM(xAxisData, yAxisData, contrastInput, hideInput);
   }
 
   /**
@@ -257,9 +277,11 @@
     const yInput = e.target.querySelector('.color-input-y');
     const xAxisData = getInputData(xInput.value);
     const yAxisData = yInput.value.trim().length ? getInputData(yInput.value) : getInputData(xInput.value);
+    const contrastInput = e.target.querySelector('#contrast').value;
+    const hideInput = e.target.querySelector('#hideBelow').checked;
     e.preventDefault(); // Don't reload the page.
 
-    writeTableToDOM(xAxisData, yAxisData);
+    writeTableToDOM(xAxisData, yAxisData, contrastInput, hideInput);
   }
 
   /**
@@ -292,7 +314,38 @@
     const yAxisData = dataFromParams.yAxisData ? dataFromParams.yAxisData : xAxisData;
 
     hydrateForm(form, xAxisData, yAxisData);
-    writeTableToDOM(xAxisData, yAxisData, false); // Do not update the query params when writing data to DOM.
+    writeTableToDOM(xAxisData, yAxisData, contrastInput, hideInput, false); // Do not update the query params when writing data to DOM.
+  }
+
+  /**
+   * Handle the blur event for the range input. Ensures output value matches range value.
+   * 
+   * @param {Event} e - The blur event object.
+   */
+  function handleRangeBlur(e) {
+    const form = document.querySelector('.color-input-form');
+    form.contrastValue.value = e.target.value;
+  }
+
+  /**
+   * Handle the change event for the range input. Updates Hide Colors Below button name to match.
+   * 
+   * @param {Event} e - The change event object.
+   */
+  function handleRangeChange() {
+    contrastBelow.textContent = contrast.value;
+  }
+  /**
+   * Handle the click events for the contrast buttons. Updates range input, output element, 
+   * and Hide Colors Below button.
+   * 
+   * @param {Event} e - The click event object.
+   */
+  function handleContrastButtonClick(e) {
+    const form = document.querySelector('.color-input-form');
+    contrast.value = e.target.dataset.value;
+    form.contrastValue.value = e.target.dataset.value;
+    contrastBelow.textContent = e.target.dataset.value;
   }
 
   /**
@@ -301,6 +354,7 @@
   function init() {
     const form = document.querySelector('.color-input-form');
     const reverseDataButton = document.querySelector('.button-reverse');
+    const contrastButtons = document.querySelectorAll('.datalist-buttons > button[data-value]');
     const tableContainer = document.querySelector('.table-container');
     const dataFromParams = getDataFromQueryParams();
     const xAxisData = dataFromParams.xAxisData;
@@ -309,10 +363,16 @@
     window.addEventListener('popstate', handlePopstate);
     form.addEventListener('submit', handleSubmit);
     reverseDataButton.addEventListener('click', reverseInputData);
+    contrast.addEventListener('blur', handleRangeBlur);
+    contrast.addEventListener('change', handleRangeChange);
+    contrastButtons.forEach((b) => {
+      b.addEventListener('click', handleContrastButtonClick);
+    });
+
     tableContainer.addEventListener('mouseover', handleTableMouseover);
 
     hydrateForm(form, xAxisData, yAxisData);
-    writeTableToDOM(xAxisData, yAxisData);
+    writeTableToDOM(xAxisData, yAxisData, 7, false);
   }
 
   // Lets do this!
