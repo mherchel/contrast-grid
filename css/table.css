@@ -26,6 +26,11 @@ td:hover {
   color: var(--hover-text-color);
 }
 
+td:focus {
+  outline: 2px solid var(--hover-text-color);
+  outline-offset: -8px;
+}
+
 th {
   background-color: var(--color);
   color: var(--text-color);
@@ -34,6 +39,7 @@ th {
 td {
   background-color: var(--color-1, white);
   color: var(--color-2);
+  cursor: pointer;
 }
 
 tr:first-child th span {
@@ -101,4 +107,10 @@ tr:hover :is(th, td):after {
 
 .color-name {
   font-size: 16px;
+}
+
+dialog#popover {
+  position: fixed;
+  inset: 2rem 2rem auto auto;
+  z-index: 4; /* display above table headers */
 }
